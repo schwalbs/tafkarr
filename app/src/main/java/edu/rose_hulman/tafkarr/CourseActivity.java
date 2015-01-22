@@ -57,7 +57,7 @@ public class CourseActivity extends Activity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_course, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_course_tab, container, false);
 
 
             return rootView;
