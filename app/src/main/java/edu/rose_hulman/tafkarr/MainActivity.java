@@ -128,13 +128,19 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            switch(position){
+                case 0:
+                    return PlaceholderFragment.newInstance(position + 1);
+                case 1:
+                    return new ScheduleLookupFragment();
+                default:
+                    return PlaceholderFragment.newInstance(position + 1);
+            }
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            return 2;
         }
 
         @Override
@@ -142,11 +148,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
-                    return getString(R.string.title_section1).toUpperCase(l);
+                    return getString(R.string.courses);
                 case 1:
-                    return getString(R.string.title_section2).toUpperCase(l);
-                case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
+                    return getString(R.string.schedule_lookup);
             }
             return null;
         }

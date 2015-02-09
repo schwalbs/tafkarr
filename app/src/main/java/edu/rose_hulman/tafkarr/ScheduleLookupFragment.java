@@ -74,26 +74,26 @@ public class ScheduleLookupFragment extends Fragment {
                 android.R.layout.simple_spinner_item, getResources()
                 .getStringArray(R.array.terms)));
 
-//        mSubmit = (Button) root.findViewById(R.id.submit);
-//        mSubmit.setOnClickListener(new OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                performSearch();
-//            }
-//        });
+        mSubmit = (Button) root.findViewById(R.id.search);
+        mSubmit.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                performSearch();
+           }
+        });
 
-//        mSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//            @Override
-//            public boolean onEditorAction(TextView textView, int id,
-//                                          KeyEvent keyEvent) {
-//                if (id == R.id.searchIME || id == EditorInfo.IME_NULL) {
-//                    performSearch();
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
-//
+        mSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int id,
+                                          KeyEvent keyEvent) {
+                if (id == R.id.searchIME || id == EditorInfo.IME_NULL) {
+                    performSearch();
+                    return true;
+               }
+               return false;
+            }
+        });
+
         return root;
     }
 

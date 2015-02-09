@@ -19,7 +19,6 @@ import org.jsoup.select.Elements;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -47,15 +46,14 @@ public class ScheduleLookupRequest extends
 			return null;
 		}
 
-		ArrayList<String> data = new ArrayList<String>();
-		Log.d("HHH", params[0]);
+		ArrayList<String> data = new ArrayList<>();
 		String authorization = params[0];
 		String term = params[1];
 		String userSearch = params[2];
 		try {
 			HttpPost req = new HttpPost(
 					"https://prodweb.rose-hulman.edu/regweb-cgi/reg-sched.pl");
-			List<NameValuePair> reqParams = new ArrayList<NameValuePair>(2);
+			List<NameValuePair> reqParams = new ArrayList<>(2);
 			reqParams.add(new BasicNameValuePair("termcode", term));
 			reqParams.add(new BasicNameValuePair("view", "grid"));
 			// username
@@ -110,7 +108,7 @@ public class ScheduleLookupRequest extends
 
 	private ArrayList<String> searchMultiple(Document doc, String term,
 			String authorization) {
-		ArrayList<String> compiled = new ArrayList<String>();
+		ArrayList<String> compiled = new ArrayList<>();
 
 		// get table showing users
 		Element usernamesTable = doc.select("table").get(1);
@@ -128,7 +126,7 @@ public class ScheduleLookupRequest extends
 		try {
 			HttpPost req = new HttpPost(
 					"https://prodweb.rose-hulman.edu/regweb-cgi/reg-sched.pl");
-			List<NameValuePair> params = new ArrayList<NameValuePair>(2);
+			List<NameValuePair> params = new ArrayList<>(2);
 			params.add(new BasicNameValuePair("termcode", term));
 			params.add(new BasicNameValuePair("view", "grid"));
 			// username
@@ -166,7 +164,7 @@ public class ScheduleLookupRequest extends
 	}
 
 	private String parseUserSearchHTML(Document doc) {
-		String userInfo = doc.select("table td[class=\"bw80\"]").first().text();
+		String userInfo = doc.select("table td[class=bw80]").first().text();
 		int namePos = userInfo.indexOf("Name: ");
 		int majorPos = userInfo.indexOf("Major: ");
 		int yearPos = userInfo.indexOf("Year: ");
