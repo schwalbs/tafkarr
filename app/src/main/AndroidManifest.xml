@@ -34,6 +34,14 @@
             android:name=".EditCourseActivity"
             android:label="@string/title_activity_edit_course" >
         </activity>
+        <activity
+            android:name=".MainActivity2Activity"
+            android:label="@string/title_activity_main_activity2" >
+        </activity>
+        <activity
+            android:name=".ScheduleLookupFragment"
+            android:label="@string/title_activity_schedule_lookup" >
+        </activity>
     </application>
 
 </manifest>
