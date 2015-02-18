@@ -29,9 +29,8 @@
             android:layout_marginRight="5dp"
             android:layout_weight="0.5"
             android:hint="@string/query"
-            android:imeActionId="@+id/searchIME"
             android:imeActionLabel="@string/search"
-            android:imeOptions="actionUnspecified"
+            android:imeOptions="actionSearch"
             android:inputType="text"
             android:maxLines="1"
             android:singleLine="true"
@@ -42,8 +41,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.3"
-            android:text="@string/search"
-            android:textColor="@color/text_primary" />
+            android:text="@string/search"/>
     </LinearLayout>
 
     <View

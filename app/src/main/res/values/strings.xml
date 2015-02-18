@@ -17,11 +17,11 @@
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>
     <string name="sign_in">Sign in</string>
+    <string name="sign_out">Sign out</string>
     <string name="verification_error">Unable to verify credentials</string>
     <string name="error_field_required">This field is required</string>
     <string name="shared_prefs_file">edu.rosehulman.tafkarr</string>
     <string name="schedule_lookup_field_required">Search query required</string>
-
     <string name="courses">Courses</string>
     <string name="schedule_lookup">Schedule Lookup</string>
 
