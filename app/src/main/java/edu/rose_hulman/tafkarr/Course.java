@@ -7,35 +7,38 @@ import java.util.ArrayList;
  */
 public class Course {
     private String mTitle;
+    private double mTargetGrade;
+    private ArrayList<CourseCategory> mCategories;
+    private double mCourseGrade;
 
-    public String getmTitle() {
+    public String getTitle() {
         return mTitle;
     }
 
-    public void setmTitle(String mTitle) {
+    public void setTitle(String mTitle) {
         this.mTitle = mTitle;
     }
 
-    public double getmTargetGrade() {
+    public double getTargetGrade() {
         return mTargetGrade;
     }
 
-    public void setmTargetGrade(double mTargetGrade) {
+    public void setTargetGrade(double mTargetGrade) {
         this.mTargetGrade = mTargetGrade;
     }
 
     public double getCourseGrade() {
-        return 0.0;
+        return mCourseGrade;
+    }
+    public void setCourseGrade(double grade){
+        mCourseGrade= grade;
     }
 
     public ArrayList<CourseCategory> getmCategories() {
         return mCategories;
     }
 
-    public void setmCategories(ArrayList<CourseCategory> mCategories) {
+    public void setCategories(ArrayList<CourseCategory> mCategories) {
         this.mCategories = mCategories;
     }
-    private double mTargetGrade;
-    private ArrayList<CourseCategory> mCategories;
-
 }

@@ -1,32 +1,28 @@
 package edu.rose_hulman.tafkarr;
 
 import android.app.Activity;
-import android.app.DialogFragment;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import static android.app.PendingIntent.getActivity;
-
-
-public class CourseActivity extends Activity implements AddAssignmentDialogFragment.addAssignmentDialogListener{
-
+/**
+ * Created by andrewca on 2/18/2015.
+ */
+public class AddAssignmentActivity extends Activity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course);
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new CourseFragment())
+                    .add(R.id.container, new AddAssignmentFragment())
                     .commit();
         }
     }
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_edit_course, menu);
+        getMenuInflater().inflate(R.menu.menu_course, menu);
         return true;
     }
 
@@ -38,25 +34,11 @@ public class CourseActivity extends Activity implements AddAssignmentDialogFragm
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.add_assignment) {
-            DialogFragment dialog = new AddAssignmentDialogFragment();
-            dialog.show(getFragmentManager(), "addAssignmentDialogFragment");
-        }
-        else if(id == R.id.add_category){
+        if (id == R.id.action_settings) {
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-
-    @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
-
-    }
-
-    @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
-
-    }
 }

@@ -2,7 +2,6 @@ package edu.rose_hulman.tafkarr;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -23,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+
 
 
 public class ScheduleLookupFragment extends Fragment {
@@ -46,16 +46,16 @@ public class ScheduleLookupFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                                Bundle savedInstanceState){
         View root = inflater.inflate(R.layout.fragment_schedule_lookup, container, false);
 
         msharedPrefs = getActivity().getSharedPreferences(
-                getString(R.string.shared_prefs_file), Activity.MODE_PRIVATE);
+                getString(R.string.shared_prefs_file), getActivity().MODE_PRIVATE);
 
         ArrayList<String> results = savedInstanceState == null ? null
                 : savedInstanceState.getStringArrayList(RESULTS_BUNDLE_KEY);
         if (results == null) {
-            results = new ArrayList<>();
+            results = new ArrayList<String>();
         }
 
         mResultsList = (RecyclerView) root.findViewById(R.id.resultsList);
@@ -70,7 +70,7 @@ public class ScheduleLookupFragment extends Fragment {
         mSearch = (EditText) root.findViewById(R.id.usernameSearchInput);
 
         mTermSelect = (Spinner) root.findViewById(R.id.termSelect);
-        mTermSelect.setAdapter(new ArrayAdapter<>(getActivity(),
+        mTermSelect.setAdapter(new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_spinner_item, getResources()
                 .getStringArray(R.array.terms)));
 
@@ -79,18 +79,18 @@ public class ScheduleLookupFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 performSearch();
-            }
+           }
         });
 
         mSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id,
                                           KeyEvent keyEvent) {
-                if (id == EditorInfo.IME_ACTION_SEARCH) {
+                if (id == R.id.searchIME || id == EditorInfo.IME_NULL) {
                     performSearch();
                     return true;
-                }
-                return false;
+               }
+               return false;
             }
         });
 
