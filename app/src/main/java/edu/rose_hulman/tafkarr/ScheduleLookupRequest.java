@@ -160,7 +160,7 @@ public class ScheduleLookupRequest extends
 	}
 
 	private boolean searchShowsOneUser(Document doc) {
-		return doc.select("table td[class=\"bw80\"").first() != null;
+		return doc.select("table td[class=bw80").first() != null;
 	}
 
 	private String parseUserSearchHTML(Document doc) {

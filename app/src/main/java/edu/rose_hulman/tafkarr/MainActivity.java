@@ -16,7 +16,8 @@ import android.support.v13.app.FragmentPagerAdapter;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.content.Intent;
+import android.content.SharedPreferences;
 
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
@@ -92,7 +93,18 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_sign_out) {
+            //remove the saved authorization
+            SharedPreferences sharedPrefs = getSharedPreferences(
+                    getString(R.string.shared_prefs_file), MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPrefs.edit();
+            editor.remove(ScheduleLookupFragment.SHARED_PREF_AUTH_KEY);
+            editor.commit();
+
+            //go back to login
+            Intent i = new Intent(this, LoginActivity.class);
+            this.startActivity(i);
+            finish();
             return true;
         }
 
@@ -128,7 +140,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            switch(position){
+            switch (position) {
                 case 0:
                     return new CourseListFragment();
                 case 1:

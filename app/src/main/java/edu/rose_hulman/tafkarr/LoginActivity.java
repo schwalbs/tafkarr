@@ -56,8 +56,7 @@ public class LoginActivity extends Activity {
                 null);
         if (auth != null) {
             if (!auth.isEmpty()) {
-                Intent i = new Intent(LoginActivity.this, MainActivity.class);
-                LoginActivity.this.startActivity(i);
+                goToMainActivity();
             }
         }
 
@@ -232,9 +231,7 @@ public class LoginActivity extends Activity {
                                 .getBytes()));
                 editor.putString("auth", authorization);
                 editor.commit();
-
-                Intent i = new Intent(LoginActivity.this, MainActivity.class);
-                LoginActivity.this.startActivity(i);
+                goToMainActivity();
             } else {
                 Toast.makeText(LoginActivity.this,
                         getString(R.string.verification_error),
@@ -248,5 +245,11 @@ public class LoginActivity extends Activity {
             mAuthTask = null;
             showProgress(false);
         }
+    }
+
+    private void goToMainActivity() {
+        Intent i = new Intent(LoginActivity.this, MainActivity.class);
+        LoginActivity.this.startActivity(i);
+        finish();
     }
 }
