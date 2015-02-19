@@ -34,13 +34,21 @@ public class CourseListFragment extends ListFragment {
         super.onCreate(savedInstanceState);
         mCourses = new ArrayList<Course>();
         Course androidDev = new Course();
-        androidDev.setTitle("Android Development");
-        androidDev.setCourseGrade(90);
+        androidDev.setTitle("Android Application Development");
+        androidDev.setCourseGrade(96);
         mCourses.add(androidDev);
         Course compArc = new Course();
-        compArc.setTitle("Adv Topics in Computer Arc");
+        compArc.setTitle("AdvTopics in Comp Architecture");
         compArc.setCourseGrade(86.0);
         mCourses.add(compArc);
+        Course german = new Course();
+        german.setTitle("German Language & Culture II");
+        german.setCourseGrade(79.0);
+        mCourses.add(german);
+        Course srDesign = new Course();
+        srDesign.setTitle("Engineering Design II");
+        srDesign.setCourseGrade(100.0);
+        mCourses.add(srDesign);
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){

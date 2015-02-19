@@ -4,11 +4,17 @@
     android:layout_height="match_parent">
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:id="@+id/group_title"
         android:textSize="20sp"
         android:textStyle="bold"
         android:layout_weight="1"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:id="@+id/group_value"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
     <!--
     <ImageButton
         android:layout_width="wrap_content"
