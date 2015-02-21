@@ -37,6 +37,7 @@ public class CourseFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        getActivity().getIntent().getStringExtra(CourseListFragment.courseId);
         prepareListData();
     }
 

@@ -1,16 +1,25 @@
 package edu.rose_hulman.tafkarr;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.app.ListFragment;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.text.Layout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 
@@ -19,9 +28,13 @@ import java.util.ArrayList;
 import edu.rose_hulman.tafkarr.dummy.DummyContent;
 
 
-public class CourseListFragment extends ListFragment {
-    private ArrayList<Course> mCourses;
+public class CourseListFragment extends Fragment {
 
+    public static final String courseId="45";
+    public static final String courseBundleId="FF";
+    private static ListView mListView;
+    private static ClassDataAdapter mClassDataAdapter;
+    private static SimpleCursorAdapter mCursorAdapter;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -32,72 +45,101 @@ public class CourseListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mCourses = new ArrayList<Course>();
-        Course androidDev = new Course();
-        androidDev.setTitle("Android Application Development");
-        androidDev.setCourseGrade(96);
-        mCourses.add(androidDev);
-        Course compArc = new Course();
-        compArc.setTitle("AdvTopics in Comp Architecture");
-        compArc.setCourseGrade(86.0);
-        mCourses.add(compArc);
-        Course german = new Course();
-        german.setTitle("German Language & Culture II");
-        german.setCourseGrade(79.0);
-        mCourses.add(german);
-        Course srDesign = new Course();
-        srDesign.setTitle("Engineering Design II");
-        srDesign.setCourseGrade(100.0);
-        mCourses.add(srDesign);
+        Context context = getActivity();
+        mClassDataAdapter = new ClassDataAdapter(this.getActivity());
+        mClassDataAdapter.open();
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View rootView = inflater.inflate(R.layout.fragment_course_tab, container, false);
-        setListAdapter(new CourseAdapter(mCourses));
+        mListView = (ListView)rootView.findViewById(android.R.id.list);
+
+        Cursor cursor = mClassDataAdapter.getScoresCursor();
+        String[] fromColumns = new String[] { ClassDataAdapter.KEY_NAME,
+                ClassDataAdapter.KEY_SCORE };
+        int[] toTextViews = new int[] { R.id.courseRowTitle, R.id.courseRowGrade};
+        mCursorAdapter = new SimpleCursorAdapter(this.getActivity(),
+                R.layout.course_row, cursor, fromColumns, toTextViews, 0);
+        mListView.setAdapter(mCursorAdapter);
+        registerForContextMenu(mListView);
+
+//        mListView.setAdapter(new CourseAdapter(mCourses, getActivity()));
+
+//        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent i = new Intent(getActivity(), CourseActivity.class);
+//                i.putExtra(courseId, mCourses.get(position).getTitle());
+//                startActivityForResult(i, position);
+//            }
+//        });
         return rootView;
     }
 
+//    @Override
+//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//            mCourses.get(requestCode).setCourseGrade(data.getIntExtra("TAG",-1));
+//    }
 
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-
-        Intent i = new Intent(getActivity(), CourseActivity.class);
-        startActivity(i);
-
-
+     static void addClass(Course c) {
+        mClassDataAdapter.addScore(c);
+        Cursor cursor = mClassDataAdapter.getScoresCursor();
+        mCursorAdapter.changeCursor(cursor);
+        mClassDataAdapter.logAll();
     }
 
-    public class CourseAdapter extends ArrayAdapter<Course>{
-        public CourseAdapter(ArrayList<Course> courses) {
-            super(getActivity(), 0, courses);
-        }
-        @Override
-        public View getView(final int position, View convertView,
-                            ViewGroup parent) {
-            if (convertView == null) {
-                convertView = getActivity().getLayoutInflater().inflate(
-                        R.layout.course_row, null);
-            }
-            Course course = getItem(position);
-
-            TextView titleTextView = (TextView) convertView
-                    .findViewById(R.id.courseRowTitle);
-            TextView gradeTextView = (TextView) convertView
-                    .findViewById(R.id.courseRowGrade);
-//            ImageButton addAssignment = (ImageButton) convertView.findViewById(R.id.courseRowEdit);
-//            addAssignment.setFocusable(true);
-            titleTextView.setText(course.getTitle());
-            gradeTextView.setText(course.getCourseGrade() + "");
-//            addAssignment.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Intent intent = new Intent(getActivity(), AddAssignmentActivity.class);
-//                    startActivity(intent);
-//                }
-//            });
-            return convertView;
-        }
+    /**
+     * Read: Get a score for the data storage mechanism
+     *
+     * @param id
+     *            Index of the score in the data storage mechanism
+     */
+    private Course getScore(long id) {
+        // return mScores.get((int) id);
+        return mClassDataAdapter.getScore(id);
     }
+
+    /**
+     * Update: Edit a score in the data storage mechanism Uses the values in the
+     * pass Score to updates the score at the mSelectedId location
+     *
+     * @param c
+     *            Container for the new values to use in the update
+     */
+//    private void editScore(Course c) {
+//        if (mSelectedId == -1) {
+//            Log.e("SLS", "Attempt to update with no score selected.");
+//        }
+//        c.setId((int) mSelectedId);
+//        mScoreDataAdapter.updateScore(s);
+//        Cursor cursor = mScoreDataAdapter.getScoresCursor();
+//        mCursorAdapter.changeCursor(cursor);
+//
+//        // Score selectedScore = getScore(mSelectedId);
+//        // selectedScore.setName(s.getName());
+//        // selectedScore.setScore(s.getScore());
+//        // Collections.sort(mScores);
+//        // mScoreAdapter.notifyDataSetChanged();
+//    }
+
+    /**
+     * Delete: Remove a score from the data storage mechanism
+     *
+     * @param id
+     *            Index of the score in the data storage mechanism
+     */
+    private void removeScore(long id) {
+        // mScores.remove((int) id);
+        // Collections.sort(mScores);
+        // mScoreAdapter.notifyDataSetChanged();
+        mClassDataAdapter.removeScore(id);
+        Cursor cursor = mClassDataAdapter.getScoresCursor();
+        mCursorAdapter.changeCursor(cursor);
+    }
+
+
+
 
 }

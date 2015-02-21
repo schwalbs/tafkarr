@@ -4,4 +4,9 @@
     tools:context="edu.rose_hulman.tafkarr.MainActivity">
     <item android:id="@+id/action_sign_out" android:title="@string/sign_out"
         android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/add_class"
+        android:title="Add class"
+        android:orderInCategory="1"
+        app:showAsAction="ifRoom|withText"/>
+
 </menu>

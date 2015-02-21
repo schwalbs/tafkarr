@@ -1,15 +1,31 @@
 package edu.rose_hulman.tafkarr;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 
 /**
  * Created by andrewca on 1/17/2015.
  */
-public class Course {
+public class Course implements Parcelable {
     private String mTitle;
     private double mTargetGrade;
-    private ArrayList<CourseCategory> mCategories;
     private double mCourseGrade;
+    private long mId;
+
+    public Course(){}
+
+    public Course(String title, double targetGrade, double courseGrade){
+        mTitle = title;
+        mTargetGrade = targetGrade;
+        mCourseGrade = courseGrade;
+    }
+    public Course(Parcel source){
+        mTitle = source.readString();
+        mTargetGrade = source.readDouble();
+        mCourseGrade = source.readDouble();
+    }
 
     public String getTitle() {
         return mTitle;
@@ -34,11 +50,34 @@ public class Course {
         mCourseGrade= grade;
     }
 
-    public ArrayList<CourseCategory> getmCategories() {
-        return mCategories;
+    public long getId(){
+        return mId;
+    }
+    public void setId(long newId){
+        mId = newId;
     }
 
-    public void setCategories(ArrayList<CourseCategory> mCategories) {
-        this.mCategories = mCategories;
+    @Override
+    public int describeContents() {
+        return 0;
     }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mTitle);
+        dest.writeDouble(mTargetGrade);
+        dest.writeDouble(mCourseGrade);
+    }
+    public static final Parcelable.Creator<Course> CREATOR = new Parcelable.Creator<Course>() {
+
+        @Override
+        public Course createFromParcel(Parcel source) {
+            return new Course(source);
+        }
+
+        @Override
+        public Course[] newArray(int size) {
+            return new Course[size];
+        }
+    };
 }

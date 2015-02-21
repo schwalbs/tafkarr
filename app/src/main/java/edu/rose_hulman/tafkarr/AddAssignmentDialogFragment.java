@@ -49,8 +49,8 @@ public class AddAssignmentDialogFragment extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        builder.setView(R.layout.dialog_add_class);
-        View layoutView = inflater.inflate(R.layout.dialog_add_class, null);
+        builder.setView(R.layout.dialog_add_assignment);
+        View layoutView = inflater.inflate(R.layout.dialog_add_assignment, null);
         builder.setView(layoutView);
         assignmentNameEditText = (EditText) layoutView.findViewById(R.id.assignment_name);
         final Spinner mCatSpin = (Spinner) layoutView.findViewById(R.id.spinner2);

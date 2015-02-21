@@ -16,6 +16,7 @@ public class CourseActivity extends Activity implements AddCategoryDialogFragmen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course);
         if (savedInstanceState == null) {
+
             getFragmentManager().beginTransaction()
                     .add(R.id.container, new CourseFragment())
                     .commit();

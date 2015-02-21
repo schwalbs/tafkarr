@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -20,7 +21,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 
 
-public class MainActivity extends Activity implements ActionBar.TabListener {
+public class MainActivity extends Activity implements ActionBar.TabListener,AddClassDialogFragment.addClassDialogListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -107,6 +108,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             finish();
             return true;
         }
+        if (id == R.id.add_class){
+            AddClassDialogFragment newDialog = new AddClassDialogFragment();
+            newDialog.show(getFragmentManager(), "dialog");
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -124,6 +129,18 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    }
+
+    @Override
+    public void onClassConfirmClick(DialogFragment dialog, String className) {
+        Course newCourse = new Course();
+        newCourse.setTitle(className);
+        CourseListFragment.addClass(newCourse);
+    }
+
+    @Override
+    public void onClassDenyClick(DialogFragment dialog) {
+
     }
 
     /**
