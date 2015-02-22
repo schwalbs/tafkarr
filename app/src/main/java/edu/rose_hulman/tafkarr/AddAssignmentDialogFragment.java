@@ -5,10 +5,15 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.CursorAdapter;
 import android.widget.EditText;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 
 public class AddAssignmentDialogFragment extends DialogFragment {
@@ -44,7 +49,7 @@ public class AddAssignmentDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Build the dialog and set up the button click handlers
-
+        String category = "";
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = getActivity().getLayoutInflater();
         builder.setView(R.layout.dialog_add_assignment);
@@ -54,13 +59,11 @@ public class AddAssignmentDialogFragment extends DialogFragment {
         assignmentNameEditText = (EditText) layoutView.findViewById(R.id.assignment_name);
 
         mCatSpin = (Spinner) layoutView.findViewById(R.id.category_picker);
-
-//        mCatSpin.setAdapter(new SimpleCursorAdapter(getActivity(), android.R.layout.simple_spinner_item, );
-        //new ArrayAdapter<String>(getActivity(),
-        //android.R.layout.simple_spinner_item, CourseFragment.listCategories));
+        CategoryDataAdapter mCategoryDataAdapter =  CourseFragment.mCategoryDataAdapter;
+        Cursor categories = mCategoryDataAdapter.getCategorysCursor(getActivity().getIntent().getLongExtra(CourseListFragment.courseId, -1));
+        mCatSpin.setAdapter(new SimpleCursorAdapter(getActivity(), android.R.layout.simple_spinner_item, categories,new String[]{CategoryDataAdapter.KEY_NAME}, new int[]{android.R.id.text1}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER));
 
         mAssignmentGradeField = (EditText) layoutView.findViewById(R.id.assignment_grade);
-
         builder.setTitle(getActivity().getString(R.string.add_assignment_dialog_title));
         builder
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -96,8 +99,9 @@ public class AddAssignmentDialogFragment extends DialogFragment {
                     } else if (mGrade.isEmpty()) {
                         mAssignmentGradeField.setError(getActivity().getString(R.string.required));
                     } else {
+//                        Log.d("HHH", mCatSpin.getSe);
                         int grade = Integer.parseInt(mGrade);
-                        mListener.onDialogPositiveClick(AddAssignmentDialogFragment.this, mAssignmentName, mCatSpin.getSelectedItem().toString(), grade);
+                        mListener.onDialogPositiveClick(AddAssignmentDialogFragment.this, mAssignmentName,mCatSpin.getSelectedItem().toString(), grade);
                         dismiss();
                     }
                 }

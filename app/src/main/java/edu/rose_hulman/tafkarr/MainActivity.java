@@ -141,11 +141,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Add
         CourseListFragment.addCourse(newCourse);
     }
 
-    @Override
-    public void onCourseDenyClick(DialogFragment dialog) {
-
-    }
-
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.

@@ -80,7 +80,7 @@ public class CourseListFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(getActivity(), CourseActivity.class);
                 SQLiteCursor cursor = (SQLiteCursor) mCursorAdapter.getItem(position);
-                i.putExtra(courseId, cursor.getInt(cursor.getColumnIndex(CourseDataAdapter.KEY_ID)));
+                i.putExtra(courseId, cursor.getLong(cursor.getColumnIndex(CourseDataAdapter.KEY_ID)));
 //                i.putExtra(courseName, cursor.getString(cursor.getColumnIndex(ClassDataAdapter.KEY_NAME)));
                 startActivityForResult(i, position);
             }

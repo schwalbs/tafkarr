@@ -16,7 +16,7 @@ public class CourseDataAdapter {
     private static final String TABLE_NAME = "courses";
     // We increment this every time we change the database schema which will
     // kick off an automatic upgrade
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private SQLiteOpenHelper mOpenHelper;
     private SQLiteDatabase mDatabase;

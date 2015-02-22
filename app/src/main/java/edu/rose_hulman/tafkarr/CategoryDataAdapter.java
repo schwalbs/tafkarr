@@ -13,7 +13,7 @@ public class CategoryDataAdapter {
     private static final String TABLE_NAME = "categorys";
     // We increment this every time we change the database schema which will
     // kick off an automatic upgrade
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 4;
 
     // TODO: Implement a SQLite database
     private SQLiteOpenHelper mOpenHelper;
@@ -74,6 +74,11 @@ public class CategoryDataAdapter {
         return rowId;
     }
 
+    public Cursor getCategorysCursor(long id) {
+        String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_WEIGHT, KEY_CLASS};
+        return mDatabase.query(TABLE_NAME, projection, KEY_CLASS + " = " + id, null, null, null,
+                KEY_WEIGHT + " DESC");
+    }
     public Cursor getCategorysCursor() {
         String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_WEIGHT, KEY_CLASS};
         return mDatabase.query(TABLE_NAME, projection, null, null, null, null,
@@ -83,6 +88,18 @@ public class CategoryDataAdapter {
     public Category getCategory(long id) {
         String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_WEIGHT, KEY_CLASS};
         String selection = KEY_ID + " = " + id;
+        boolean distinctRows = true;
+        Cursor c = mDatabase.query(distinctRows, TABLE_NAME, projection,
+                selection, null, null, null, null, null);
+        if (c != null && c.moveToFirst()) {
+            return getCategoryFromCursor(c);
+        }
+        return null;
+    }
+
+    public Category getCategories(long id) {
+        String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_WEIGHT, KEY_CLASS};
+        String selection = KEY_CLASS + " = " + id;
         boolean distinctRows = true;
         Cursor c = mDatabase.query(distinctRows, TABLE_NAME, projection,
                 selection, null, null, null, null, null);

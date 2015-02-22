@@ -28,17 +28,10 @@ public class CourseFragment extends Fragment {
     public static List<String> listCategories;
     public static HashMap<String, List<Assignment>> mapAssignments;
     private static AssignmentDataAdapter mAssignmentDataAdapter;
-    private static CategoryDataAdapter mCategoryDataAdapter;
+    public static CategoryDataAdapter mCategoryDataAdapter;
     private static SimpleCursorTreeAdapter mCursorAdapter;
     private static long courseId;
-    public static final String[] CATEGORY_PROJECTION = new String[]{
-            CategoryDataAdapter.KEY_NAME};
-
-    public static final String[] ASSIGNMENT_PROJECTION = new String[]{
-            AssignmentDataAdapter.KEY_NAME,
-            AssignmentDataAdapter.KEY_SCORE};
-
-
+    private static String mCourseName;
 
     public CourseFragment() {
     }
@@ -48,8 +41,7 @@ public class CourseFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         courseId = getActivity().getIntent().getLongExtra(CourseListFragment.courseId, -1);
-//        getActivity().getIntent().getStringExtra(CourseListFragment.courseName);
-//        prepareListData();
+        mCourseName = getActivity().getIntent().getStringExtra(CourseListFragment.courseName);
         mAssignmentDataAdapter = new AssignmentDataAdapter(this.getActivity());
         mAssignmentDataAdapter.open();
         mCategoryDataAdapter = new CategoryDataAdapter(this.getActivity());
@@ -62,14 +54,14 @@ public class CourseFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_course, container, false);
         mListView = (ExpandableListView) rootView.findViewById(R.id.expandableListView);
 
-        Cursor cursor = mAssignmentDataAdapter.getAssignmentsCursor();
+        Cursor categoryCursor = mCategoryDataAdapter.getCategorysCursor(this.courseId);
         String[] fromColumns = new String[]{CourseDataAdapter.KEY_NAME,
                 CourseDataAdapter.KEY_SCORE};
         int[] toTextViews = new int[]{R.id.courseRowTitle, R.id.courseRowGrade};
         mListView.setAdapter(mCursorAdapter);
         registerForContextMenu(mListView);
 
-        mCursorAdapter = new SimpleCursorTreeAdapter(this.getActivity(), cursor,
+        mCursorAdapter = new SimpleCursorTreeAdapter(this.getActivity(), categoryCursor,
                 R.layout.course_list_group,
                 R.layout.course_list_group,
                 new String[]{CategoryDataAdapter.KEY_NAME},
@@ -80,7 +72,7 @@ public class CourseFragment extends Fragment {
                 new int[]{R.id.assignment_title, R.id.assignment_grade}) {
             @Override
             protected Cursor getChildrenCursor(Cursor groupCursor) {
-                return mAssignmentDataAdapter.getAssignmentsCursor();
+                return mAssignmentDataAdapter.getAssignmentsCursor(groupCursor.getString(groupCursor.getColumnIndexOrThrow(CategoryDataAdapter.KEY_NAME)));
             }
         };
 
@@ -97,22 +89,12 @@ public class CourseFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.add_assignment) {
-//            DialogFragment dialog = new AddAssignmentDialogFragment();
-//            dialog.show(getFragmentManager(), "addAssignmentDialogFragment");
             AddAssignmentDialogFragment newDialog = new AddAssignmentDialogFragment();
             newDialog.show(getFragmentManager(), "dialogAss");
 
         } else if (id == R.id.add_category) {
-//            DialogFragment dialog = AddCategoryDialogFragment.newInstatnce();
-//            dialog.show(getFragmentManager(), "addCategoryDialogFragment");
-//            FragmentTransaction ft = getFragmentManager().beginTransaction();
             AddCategoryDialogFragment newDialog = new AddCategoryDialogFragment();
             newDialog.show(getFragmentManager(), "dialog");
         }
@@ -120,17 +102,10 @@ public class CourseFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public static void addCategory(Context context, String name, int weight) {
-        listCategories.add(name);
-        List<Assignment> newList = new ArrayList<Assignment>();
-        mapAssignments.put(name, newList);
-//        mListView.setAdapter(new CourseAdapter(context, listCategories, mapAssignments));
-    }
-
     static void addCategory(Category c) {
         mCategoryDataAdapter.addCategory(c);
-        Cursor cursor = mCategoryDataAdapter.getCategorysCursor();
-        mCursorAdapter.changeCursor(cursor);
+        Cursor cursor = mCategoryDataAdapter.getCategorysCursor(courseId);
+        mCursorAdapter.setGroupCursor(cursor);
         mCategoryDataAdapter.logAll();
     }
 
@@ -173,17 +148,17 @@ public class CourseFragment extends Fragment {
      * @param id Index of the score in the data storage mechanism
      */
     private void removeCategory(long id) {
-        // mScores.remove((int) id);
-        // Collections.sort(mScores);
-        // mScoreAdapter.notifyDataSetChanged();
         mCategoryDataAdapter.removeCategory(id);
-        Cursor cursor = mCategoryDataAdapter.getCategorysCursor();
+        Cursor cursor = mCategoryDataAdapter.getCategorysCursor(courseId);
         mCursorAdapter.changeCursor(cursor);
     }
 
     static void addAssignment(Assignment a) {
         mAssignmentDataAdapter.addAssignment(a);
-        Cursor cursor = mAssignmentDataAdapter.getAssignmentsCursor();
+        Cursor cursor = mAssignmentDataAdapter.getAssignmentsCursor(a.getCatId());
+        for(int i =0; i<mCategoryDataAdapter.getCategorysCursor(courseId).getCount();i++) {
+            mCursorAdapter.setChildrenCursor(i, cursor);
+        }
         mAssignmentDataAdapter.logAll();
     }
 

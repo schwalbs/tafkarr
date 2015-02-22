@@ -7,12 +7,20 @@ public class Assignment {
     private String mTitle;
     private double mGrade;
     private long mId;
+    private String mCatName;
 
     public Assignment(String s, double i) {
         mTitle = s;
         mGrade = i;
     }
 
+    public String getCatId() {
+        return mCatName;
+    }
+
+    public void setCatId(String mCatId) {
+        this.mCatName = mCatId;
+    }
     public long getId() {
         return mId;
     }

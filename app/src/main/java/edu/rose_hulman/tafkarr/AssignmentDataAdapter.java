@@ -13,7 +13,7 @@ public class AssignmentDataAdapter {
     public static final String TABLE_NAME = "assignments";
     // We increment this every time we change the database schema which will
     // kick off an automatic upgrade
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 4;
 
     // TODO: Implement a SQLite database
     private SQLiteOpenHelper mOpenHelper;
@@ -22,6 +22,7 @@ public class AssignmentDataAdapter {
     public static final String KEY_ID = "_id";
     public static final String KEY_NAME = "name";
     public static final String KEY_SCORE = "score";
+    public static final String KEY_CAT = "category";
 
     private static String DROP_STATEMENT = "DROP TABLE IF EXISTS " + TABLE_NAME;
     private static String CREATE_STATEMENT;
@@ -31,7 +32,8 @@ public class AssignmentDataAdapter {
         sb.append("CREATE TABLE " + TABLE_NAME + " (");
         sb.append(KEY_ID + " integer primary key autoincrement, ");
         sb.append(KEY_NAME + " text, ");
-        sb.append(KEY_SCORE + " double");
+        sb.append(KEY_SCORE + " double, ");
+        sb.append(KEY_CAT + " text");
         sb.append(")");
         CREATE_STATEMENT = sb.toString();
     }
@@ -55,6 +57,7 @@ public class AssignmentDataAdapter {
         ContentValues row = new ContentValues();
         row.put(KEY_NAME, assignment.getTitle());
         row.put(KEY_SCORE, assignment.getGrade());
+        row.put(KEY_CAT, assignment.getCatId());
         return row;
     }
 
@@ -72,13 +75,20 @@ public class AssignmentDataAdapter {
     }
 
     public Cursor getAssignmentsCursor() {
-        String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_SCORE};
+        String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_SCORE, KEY_CAT};
         return mDatabase.query(TABLE_NAME, projection, null, null, null, null,
                 KEY_SCORE + " DESC");
+
+    }
+    public Cursor getAssignmentsCursor(String mCatId) {
+        String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_SCORE, KEY_CAT};
+        return mDatabase.query(TABLE_NAME, projection, KEY_CAT + " = " + mCatId, null, null, null,
+                KEY_SCORE + " DESC");
+
     }
 
     public Assignment getAssignment(long id) {
-        String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_SCORE};
+        String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_SCORE,KEY_CAT};
         String selection = KEY_ID + " = " + id;
         boolean distinctRows = true;
         Cursor c = mDatabase.query(distinctRows, TABLE_NAME, projection,
@@ -92,6 +102,7 @@ public class AssignmentDataAdapter {
     private Assignment getAssignmentFromCursor(Cursor c) {
         Assignment assignment = new Assignment(c.getString(c.getColumnIndexOrThrow(KEY_NAME)), c.getDouble(c.getColumnIndexOrThrow(KEY_SCORE)));
         assignment.setId(c.getInt(c.getColumnIndexOrThrow(KEY_ID)));
+        assignment.setCatId(c.getString(c.getColumnIndexOrThrow(KEY_CAT)));
         return assignment;
     }
 

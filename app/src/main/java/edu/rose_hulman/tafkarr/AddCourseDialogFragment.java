@@ -13,8 +13,6 @@ import android.widget.EditText;
 public class AddCourseDialogFragment extends DialogFragment {
     public interface AddCourseDialogListener {
         public void onCourseConfirmClick(DialogFragment dialog, String className);
-
-        public void onCourseDenyClick(DialogFragment dialog);
     }
 
     // Use this instance of the interface to deliver action events
@@ -56,12 +54,7 @@ public class AddCourseDialogFragment extends DialogFragment {
                         //do nothing so it can be overriden later
                     }
                 })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // Send the negative button event back to the host activity
-                        mListener.onCourseDenyClick(AddCourseDialogFragment.this);
-                    }
-                });
+                .setNegativeButton(android.R.string.cancel, null);
         return builder.create();
     }
 
