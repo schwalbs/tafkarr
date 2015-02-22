@@ -16,7 +16,7 @@ import android.widget.SeekBar;
 
 public class AddCategoryDialogFragment extends DialogFragment {
     public interface addCategoryDialogListener {
-        public void onDialogConfirmClick(DialogFragment dialog, String categoryName, int categoryWeight);
+        public void onDialogConfirmClick(DialogFragment dialog, String categoryName, double categoryWeight);
         public void onDialogDenyClick(DialogFragment dialog);
     }
 

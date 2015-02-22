@@ -1,29 +1,18 @@
 package edu.rose_hulman.tafkarr;
 
-import android.app.DialogFragment;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
-import android.app.LoaderManager;
 import android.content.Context;
-import android.content.CursorLoader;
-import android.content.Loader;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.SimpleCursorTreeAdapter;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +21,7 @@ import java.util.List;
 /**
  * Created by andrewca on 2/18/2015.
  */
-public class CourseFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class CourseFragment extends Fragment {
     private static final String LOG_TAG = "TAG";
     public static ExpandableListAdapter listAdapter;
     public static ExpandableListView mListView;
@@ -40,17 +29,14 @@ public class CourseFragment extends Fragment implements LoaderManager.LoaderCall
     public static HashMap<String, List<Assignment>> mapAssignments;
     private static AssignmentDataAdapter mAssignmentDataAdapter;
     private static CategoryDataAdapter mCategoryDataAdapter;
-    private static AssignmentSimpleCursorTreeAdapter mCursorAdapter;
+    private static SimpleCursorTreeAdapter mCursorAdapter;
     private static long courseId;
-    private static final String[] PHONE_PROJECTION = new String[] {
-            ContactsContract.CommonDataKinds.Phone._ID,
-            ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
-            ContactsContract.CommonDataKinds.Phone.NUMBER,
-            ContactsContract.CommonDataKinds.Phone.TYPE };
+    private static final String[] CATEGORY_PROJECTION = new String[] {
+            CategoryDataAdapter.KEY_NAME};
 
-    private static final String[] CONTACT_PROJECTION = new String[] {
-            ContactsContract.Contacts._ID,
-            ContactsContract.Contacts.DISPLAY_NAME };
+    private static final String[] ASSIGNMENT_PROJECTION = new String[] {
+            AssignmentDataAdapter.KEY_NAME,
+            AssignmentDataAdapter.KEY_SCORE};
 
 
     public CourseFragment() {
@@ -65,6 +51,8 @@ public class CourseFragment extends Fragment implements LoaderManager.LoaderCall
 //        prepareListData();
         mAssignmentDataAdapter = new AssignmentDataAdapter(this.getActivity());
         mAssignmentDataAdapter.open();
+        mCategoryDataAdapter = new CategoryDataAdapter(this.getActivity());
+        mCategoryDataAdapter.open();
         
     }
 
@@ -72,32 +60,33 @@ public class CourseFragment extends Fragment implements LoaderManager.LoaderCall
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View rootView = inflater.inflate(R.layout.fragment_course, container, false);
         mListView = (ExpandableListView) rootView.findViewById(R.id.expandableListView);
-        Cursor cursor = mAssignmentDataAdapter.getAssignmentsCursor();
+        Cursor cursor = mCategoryDataAdapter.getCategorysCursor();
         String[] fromColumns = new String[] { ClassDataAdapter.KEY_NAME,
                 ClassDataAdapter.KEY_SCORE };
         int[] toTextViews = new int[] { R.id.courseRowTitle, R.id.courseRowGrade};
 //        mCursorAdapter = new SimpleCursorAdapter(this.getActivity(),
 //                R.layout.course_row, cursor, fromColumns, toTextViews, 0);
-        mListView.setAdapter(mCursorAdapter);
-        registerForContextMenu(mListView);
+//        mListView.setAdapter(mCursorAdapter);
+//        registerForContextMenu(mListView);
 //        listView.setAdapter(new CourseAdapter(getActivity(), listCategories, mapAssignments));
 
-        mCursorAdapter = new AssignmentSimpleCursorTreeAdapter(this.getActivity(),
+        mCursorAdapter = new SimpleCursorTreeAdapter(this.getActivity(),cursor,
                 R.layout.course_list_group,
+                R.layout.course_list_group,
+                new String[]{CategoryDataAdapter.KEY_NAME},
+                new int[]{R.id.group_title},
                 R.layout.course_list_item,
-                new String[] { ContactsContract.Contacts.DISPLAY_NAME },
-                new int[] { R.id.group_title },
-                new String[] { ContactsContract.CommonDataKinds.Phone.NUMBER },
-                new int[] { R.id.assignment_title });
+                R.layout.course_list_item,
+                new String[]{AssignmentDataAdapter.KEY_NAME, AssignmentDataAdapter.KEY_SCORE},
+                new int[]{R.id.assignment_title, R.id.assignment_grade}) {
+            @Override
+            protected Cursor getChildrenCursor(Cursor groupCursor) {
+                return mAssignmentDataAdapter.getAssignmentsCursor();
+            }
+        };
 
         mListView.setAdapter(mCursorAdapter);
 
-        Loader<Cursor> loader = getLoaderManager().getLoader(-1);
-        if (loader != null && !loader.isReset()) {
-            getLoaderManager().restartLoader(-1, null, this);
-        } else {
-            getLoaderManager().initLoader(-1, null, this);
-        }
         return rootView;
     }
 
@@ -142,9 +131,9 @@ public class CourseFragment extends Fragment implements LoaderManager.LoaderCall
 
     static void addCategory(Category c) {
         mCategoryDataAdapter.addCategory(c);
-        Cursor cursor = mAssignmentDataAdapter.getAssignmentsCursor();
+        Cursor cursor = mCategoryDataAdapter.getCategorysCursor();
         mCursorAdapter.changeCursor(cursor);
-        mAssignmentDataAdapter.logAll();
+        mCategoryDataAdapter.logAll();
     }
 
     /**
@@ -198,7 +187,6 @@ public class CourseFragment extends Fragment implements LoaderManager.LoaderCall
     static void addAssignment(Assignment a) {
         mAssignmentDataAdapter.addAssignment(a);
         Cursor cursor = mAssignmentDataAdapter.getAssignmentsCursor();
-        mCursorAdapter.changeCursor(cursor);
         mAssignmentDataAdapter.logAll();
     }
 
@@ -248,216 +236,6 @@ public class CourseFragment extends Fragment implements LoaderManager.LoaderCall
         mCursorAdapter.changeCursor(cursor);
     }
 
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Log.d(LOG_TAG, "onCreateLoader for loader_id " + id);
-        CursorLoader cl;
-        if (id != -1) {
-            // child cursor
-            Uri contactsUri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
-            String selection = "("
-                    + ContactsContract.CommonDataKinds.Phone.CONTACT_ID
-                    + " = ? )";
-            String sortOrder = ContactsContract.CommonDataKinds.Phone.TYPE
-                    + " COLLATE LOCALIZED ASC";
-            String[] selectionArgs = new String[] { String.valueOf(id) };
-
-            cl =  new CursorLoader(this.getActivity(), contactsUri, PHONE_PROJECTION,
-                    selection, selectionArgs, sortOrder);
-        } else {
-            // group cursor
-            Uri contactsUri = ContactsContract.Contacts.CONTENT_URI;
-            String selection = "((" + ContactsContract.Contacts.DISPLAY_NAME
-                    + " NOTNULL) AND ("
-                    + ContactsContract.Contacts.HAS_PHONE_NUMBER + "=1) AND ("
-                    + ContactsContract.Contacts.DISPLAY_NAME + " != '' ))";
-            String sortOrder = ContactsContract.Contacts.DISPLAY_NAME
-                    + " COLLATE LOCALIZED ASC";
-            cl = new CursorLoader(this.getActivity(), contactsUri, CONTACT_PROJECTION,
-                    selection, null, sortOrder);
-        }
-
-        return cl;
-    }
-
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // Setting the new cursor onLoadFinished. (Old cursor would be closed
-        // automatically)
-        int id = loader.getId();
-        Log.d(LOG_TAG, "onLoadFinished() for loader_id " + id);
-        if (id != -1) {
-            // child cursor
-            if (!data.isClosed()) {
-                Log.d(LOG_TAG, "data.getCount() " + data.getCount());
-
-                HashMap<Integer, Integer> groupMap = mCursorAdapter.getGroupMap();
-                try {
-                    int groupPos = groupMap.get(id);
-                    Log.d(LOG_TAG, "onLoadFinished() for groupPos " + groupPos);
-                    mCursorAdapter.setChildrenCursor(groupPos, data);
-                } catch (NullPointerException e) {
-                    Log.w(LOG_TAG,
-                            "Adapter expired, try again on the next query: "
-                                    + e.getMessage());
-                }
-            }
-        } else {
-            mCursorAdapter.setGroupCursor(data);
-        }
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        // Called just before the cursor is about to be closed.
-        int id = loader.getId();
-        Log.d(LOG_TAG, "onLoaderReset() for loader_id " + id);
-        if (id != -1) {
-            // child cursor
-            try {
-                mCursorAdapter.setChildrenCursor(id, null);
-            } catch (NullPointerException e) {
-                Log.w(LOG_TAG, "Adapter expired, try again on the next query: "
-                        + e.getMessage());
-            }
-        } else {
-            mCursorAdapter.setGroupCursor(null);
-        }
-    }
-
-
-//    public static class CourseAdapter extends BaseExpandableListAdapter {
-//
-//        private Context mContext;
-//        private List<String> mCatagories;
-//        private HashMap<String, List<Assignment>> mAssignments;
-//        public CourseAdapter(Context context, List<String> assignmentCatagories, HashMap<String, List<Assignment>> gradedAssignments){
-//            this.mContext=context;
-//            this.mCatagories = assignmentCatagories;
-//            this.mAssignments = gradedAssignments;
-//        }
-//
-//        @Override
-//        public int getGroupCount() {
-//            return this.mCatagories.size();
-//        }
-//
-//        @Override
-//        public int getChildrenCount(int groupPosition) {
-//            return this.mAssignments.get(this.mCatagories.get(groupPosition)).size();
-//        }
-//
-//        @Override
-//        public Object getGroup(int groupPosition) {
-//            return this.mCatagories.get(groupPosition);
-//        }
-//
-//        @Override
-//        public Assignment getChild(int groupPosition, int childPosition) {
-//            return this.mAssignments.get(this.mCatagories.get(groupPosition)).get(childPosition);
-//        }
-//
-//        @Override
-//        public long getGroupId(int groupPosition) {
-//            return groupPosition;
-//        }
-//
-//        @Override
-//        public long getChildId(int groupPosition, int childPosition) {
-//            return childPosition;
-//        }
-//
-//        @Override
-//        public boolean hasStableIds() {
-//            return false;
-//        }
-//
-//        @Override
-//        public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-//            String catagoryTitle = (String) getGroup(groupPosition);
-//            if(convertView == null){
-//                LayoutInflater inflater = (LayoutInflater) this.mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//                convertView = inflater.inflate(R.layout.course_list_group, null);
-//            }
-//            TextView categoryGradeView = (TextView) convertView.findViewById(R.id.group_value);
-//            TextView categoryTitleView = (TextView) convertView.findViewById(R.id.group_title);
-//            double sum = 0;
-//            double avg = 0;
-//            for(int i=0;i<getChildrenCount(groupPosition);i++){
-//                sum = sum + getChild(groupPosition, i).getGrade();
-//            }
-//            avg=sum/getChildrenCount(groupPosition);
-//            categoryGradeView.setText(String.format("%1$,.2f",avg));
-//            categoryTitleView.setText(catagoryTitle);
-//            return convertView;
-//        }
-//
-//        @Override
-//        public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-//            final Assignment childText = (Assignment) getChild(groupPosition,childPosition);
-//            if(convertView == null){
-//                LayoutInflater inflater = (LayoutInflater) this.mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//                convertView = inflater.inflate(R.layout.course_list_item,null);
-//            }
-//            TextView listedAssignmentGrade = (TextView) convertView.findViewById(R.id.grade_value);
-//            TextView listedAssignmentTitle = (TextView) convertView.findViewById(R.id.assignment_title);
-//            listedAssignmentGrade.setText(childText.getGrade() + " ");
-//            listedAssignmentTitle.setText(childText.getTitle());
-//            return convertView;
-//        }
-//
-//        @Override
-//        public boolean isChildSelectable(int groupPosition, int childPosition) {
-//            return true;
-//        }
-//    }
-
-    public class AssignmentSimpleCursorTreeAdapter extends SimpleCursorTreeAdapter {
-
-    private final String LOG_TAG = getClass().getSimpleName().toString();
-    private CourseActivity mActivity;
-    protected final HashMap<Integer, Integer> mGroupMap;
-
-    // Please Note: Here cursor is not provided to avoid querying on main
-    // thread.
-    public AssignmentSimpleCursorTreeAdapter(Context context, int groupLayout,
-                                          int childLayout, String[] groupFrom, int[] groupTo,
-                                          String[] childrenFrom, int[] childrenTo) {
-
-        super(context, null, groupLayout, groupFrom, groupTo, childLayout,
-                childrenFrom, childrenTo);
-        mActivity = (CourseActivity) context;
-        mGroupMap = new HashMap<Integer, Integer>();
-    }
-
-    @Override
-    protected Cursor getChildrenCursor(Cursor groupCursor) {
-        // Logic to get the child cursor on the basis of selected group.
-        int groupPos = groupCursor.getPosition();
-        int groupId = groupCursor.getInt(groupCursor
-                .getColumnIndex(ContactsContract.Contacts._ID));
-
-        Log.d(LOG_TAG, "getChildrenCursor() for groupPos " + groupPos);
-        Log.d(LOG_TAG, "getChildrenCursor() for groupId " + groupId);
-
-        mGroupMap.put(groupId, groupPos);
-        Loader<Cursor> loader = mActivity.getLoaderManager().getLoader(groupId);
-        if (loader != null && !loader.isReset()) {
-            mActivity.getLoaderManager()
-                    .restartLoader(groupId, null, mActivity);
-        } else {
-            mActivity.getLoaderManager().initLoader(groupId, null, mActivity);
-        }
-
-        return null;
-    }
-
-    public HashMap<Integer, Integer> getGroupMap() {
-        return mGroupMap;
-    }
-
-}
 
 }
 
