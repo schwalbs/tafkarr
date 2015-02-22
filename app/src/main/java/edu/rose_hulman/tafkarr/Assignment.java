@@ -6,10 +6,19 @@ package edu.rose_hulman.tafkarr;
 public class Assignment {
     private String mTitle;
     private double mGrade;
+    private long mId;
 
-    public Assignment(String s, int i) {
+    public Assignment(String s, double i) {
         mTitle = s ;
         mGrade = i;
+    }
+
+    public long getId() {
+        return mId;
+    }
+
+    public void setId(long mId) {
+        this.mId = mId;
     }
 
     public double getGrade() {

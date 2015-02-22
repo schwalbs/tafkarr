@@ -7,11 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class ClassDataAdapter {
+public class AssignmentDataAdapter {
     // Becomes the filename of the database
-    private static final String DATABASE_NAME = "courses.db";
+    private static final String DATABASE_NAME = "assignments.db";
     // Only one table in this database
-    private static final String TABLE_NAME = "courses";
+    private static final String TABLE_NAME = "assignments";
     // We increment this every time we change the database schema which will
     // kick off an automatic upgrade
     private static final int DATABASE_VERSION = 1;
@@ -36,7 +36,7 @@ public class ClassDataAdapter {
         CREATE_STATEMENT = sb.toString();
     }
 
-    public ClassDataAdapter(Context context) {
+    public AssignmentDataAdapter(Context context) {
         // Create a SQLiteOpenHelper
         mOpenHelper = new ScoreDbHelper(context);
     }
@@ -51,72 +51,70 @@ public class ClassDataAdapter {
         mDatabase.close();
     }
 
-    private ContentValues getContentValuesFromScore(Course course) {
+    private ContentValues getContentValuesFromScore(Assignment assignment) {
         ContentValues row = new ContentValues();
-        row.put(KEY_NAME, course.getTitle());
-        row.put(KEY_SCORE, course.getCourseGrade());
+        row.put(KEY_NAME, assignment.getTitle());
+        row.put(KEY_SCORE, assignment.getGrade());
         return row;
     }
 
     /**
      * Add score to the table.
      *
-     * @param course
+     * @param assignment
      * @return id of the inserted row or -1 if failed
      */
-    public long addScore(Course course) {
-        ContentValues row = getContentValuesFromScore(course);
+    public long addAssignment(Assignment assignment) {
+        ContentValues row = getContentValuesFromScore(assignment);
         long rowId = mDatabase.insert(TABLE_NAME, null, row);
-        course.setId(rowId);
+        assignment.setId(rowId);
         return rowId;
     }
 
-    public Cursor getScoresCursor() {
+    public Cursor getAssignmentsCursor() {
         String[] projection = new String[] { KEY_ID, KEY_NAME, KEY_SCORE };
         return mDatabase.query(TABLE_NAME, projection, null, null, null, null,
                 KEY_SCORE + " DESC");
     }
 
-    public Course getScore(long id) {
+    public Assignment getAssignment(long id) {
         String[] projection = new String[] { KEY_ID, KEY_NAME, KEY_SCORE };
         String selection = KEY_ID + " = " + id;
         boolean distinctRows = true;
         Cursor c = mDatabase.query(distinctRows, TABLE_NAME, projection,
                 selection, null, null, null, null, null);
         if (c != null && c.moveToFirst()) {
-            return getScoreFromCursor(c);
+            return getAssignmentFromCursor(c);
         }
         return null;
     }
 
-    private Course getScoreFromCursor(Cursor c) {
-        Course course = new Course();
-        course.setId(c.getInt(c.getColumnIndexOrThrow(KEY_ID)));
-        course.setTitle(c.getString(c.getColumnIndexOrThrow(KEY_NAME)));
-        course.setCourseGrade(c.getDouble(c.getColumnIndexOrThrow(KEY_SCORE)));
-        return course;
+    private Assignment getAssignmentFromCursor(Cursor c) {
+        Assignment assignment = new Assignment(c.getString(c.getColumnIndexOrThrow(KEY_NAME)),c.getDouble(c.getColumnIndexOrThrow(KEY_SCORE)) );
+        assignment.setId(c.getInt(c.getColumnIndexOrThrow(KEY_ID)));
+        return assignment;
     }
 
-    public void updateScore(Course course) {
-        ContentValues row = getContentValuesFromScore(course);
-        String selection = KEY_ID + " = " + course.getId();
+    public void updateAssignment(Assignment assignment) {
+        ContentValues row = getContentValuesFromScore(assignment);
+        String selection = KEY_ID + " = " + assignment.getId();
         mDatabase.update(TABLE_NAME, row, selection, null);
     }
 
-    public boolean removeScore(long id) {
+    public boolean removeAssignment(long id) {
         return mDatabase.delete(TABLE_NAME, KEY_ID + " = " + id, null) > 0;
     }
 
-    public boolean removeScore(Course c) {
-        return removeScore(c.getId());
+    public boolean removeAssignment(Assignment c) {
+        return removeAssignment(c.getId());
     }
 
     public void logAll() {
-        Cursor c = getScoresCursor();
+        Cursor c = getAssignmentsCursor();
         if (c != null && c.moveToFirst()) {
 //            Log.d(ScoresListActivity.SLS, "LOGGING TABLE");
             while (!c.isAfterLast()) {
-                Course course = getScoreFromCursor(c);
+                Assignment assignment = getAssignmentFromCursor(c);
 //                Log.d(ScoresListActivity.SLS, score.toString());
                 c.moveToNext();
             }

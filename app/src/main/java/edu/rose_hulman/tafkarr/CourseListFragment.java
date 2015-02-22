@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteCursor;
 import android.os.Bundle;
 import android.app.ListFragment;
 import android.os.Parcel;
@@ -31,6 +32,7 @@ import edu.rose_hulman.tafkarr.dummy.DummyContent;
 public class CourseListFragment extends Fragment {
 
     public static final String courseId="45";
+    public static final String courseName="46";
     public static final String courseBundleId="FF";
     private static ListView mListView;
     private static ClassDataAdapter mClassDataAdapter;
@@ -45,7 +47,6 @@ public class CourseListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Context context = getActivity();
         mClassDataAdapter = new ClassDataAdapter(this.getActivity());
         mClassDataAdapter.open();
     }
@@ -66,14 +67,16 @@ public class CourseListFragment extends Fragment {
 
 //        mListView.setAdapter(new CourseAdapter(mCourses, getActivity()));
 
-//        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Intent i = new Intent(getActivity(), CourseActivity.class);
-//                i.putExtra(courseId, mCourses.get(position).getTitle());
-//                startActivityForResult(i, position);
-//            }
-//        });
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(getActivity(), CourseActivity.class);
+                SQLiteCursor cursor = (SQLiteCursor) mCursorAdapter.getItem(position);
+                i.putExtra(courseId, cursor.getInt(cursor.getColumnIndex(ClassDataAdapter.KEY_ID)));
+//                i.putExtra(courseName, cursor.getString(cursor.getColumnIndex(ClassDataAdapter.KEY_NAME)));
+                startActivityForResult(i, position);
+            }
+        });
         return rootView;
     }
 
