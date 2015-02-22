@@ -11,7 +11,7 @@ import android.view.MenuItem;
 import static android.app.PendingIntent.getActivity;
 
 
-public class CourseActivity extends Activity implements AddCategoryDialogFragment.addCategoryDialogListener,AddAssignmentDialogFragment.addAssignmentDialogListener, LoaderManager.LoaderCallbacks<Object> {
+public class CourseActivity extends Activity implements AddCategoryDialogFragment.addCategoryDialogListener,AddAssignmentDialogFragment.addAssignmentDialogListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,9 +26,11 @@ public class CourseActivity extends Activity implements AddCategoryDialogFragmen
     }
 
     @Override
-    public void onDialogConfirmClick(DialogFragment dialog, String categoryName, int categoryWeight) {
-        CourseFragment.addCategory(this, categoryName,categoryWeight);
+    public void onDialogConfirmClick(DialogFragment dialog, String categoryName, double categoryWeight) {
+        Category newCategory = new Category(categoryName,categoryWeight, getIntent().getLongExtra(CourseListFragment.courseId, -1));
+        CourseFragment.addCategory(newCategory);
     }
+
 
     @Override
     public void onDialogDenyClick(DialogFragment dialog) {
@@ -46,18 +48,4 @@ public class CourseActivity extends Activity implements AddCategoryDialogFragmen
 
     }
 
-    @Override
-    public Loader<Object> onCreateLoader(int id, Bundle args) {
-        return null;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Object> loader, Object data) {
-
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Object> loader) {
-
-    }
 }

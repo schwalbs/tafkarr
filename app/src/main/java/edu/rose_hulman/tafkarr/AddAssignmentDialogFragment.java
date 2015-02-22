@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 
 public class AddAssignmentDialogFragment extends DialogFragment {
@@ -54,8 +55,10 @@ public class AddAssignmentDialogFragment extends DialogFragment {
         builder.setView(layoutView);
         assignmentNameEditText = (EditText) layoutView.findViewById(R.id.assignment_name);
         final Spinner mCatSpin = (Spinner) layoutView.findViewById(R.id.spinner2);
-        mCatSpin.setAdapter(new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_spinner_item, CourseFragment.listCategories));
+
+//        mCatSpin.setAdapter(new SimpleCursorAdapter(getActivity(), android.R.layout.simple_spinner_item, );
+        //new ArrayAdapter<String>(getActivity(),
+                //android.R.layout.simple_spinner_item, CourseFragment.listCategories));
         final EditText mAssignmentGradeField = (EditText) layoutView.findViewById(R.id.assignment_grade);
         mAssignmentGradeField.addTextChangedListener(new TextWatcher() {
             @Override
@@ -79,7 +82,7 @@ public class AddAssignmentDialogFragment extends DialogFragment {
                     public void onClick(DialogInterface dialog, int id) {
                         // Send the positive button event back to the host activity
                         Log.d("HHH", "ONDIALOGPOSITIVECLICK:"+ assignmentNameEditText.getText().toString());
-                        mListener.onDialogPositiveClick(AddAssignmentDialogFragment.this, assignmentNameEditText.getText().toString(), mCatSpin.getSelectedItem().toString(), grade);
+                        mListener.onDialogPositiveClick(AddAssignmentDialogFragment.this, assignmentNameEditText.getText().toString(), "Things", grade);
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
