@@ -82,7 +82,8 @@ public class AssignmentDataAdapter {
     }
     public Cursor getAssignmentsCursor(String mCatId) {
         String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_SCORE, KEY_CAT};
-        return mDatabase.query(TABLE_NAME, projection, KEY_CAT + " = " + mCatId, null, null, null,
+
+        return mDatabase.query(TABLE_NAME, projection, KEY_CAT + " = '" + mCatId + "'", null, null, null,
                 KEY_SCORE + " DESC");
 
     }

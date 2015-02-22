@@ -23,6 +23,7 @@ public class CategoryDataAdapter {
     public static final String KEY_NAME = "name";
     public static final String KEY_CLASS = "class";
     public static final String KEY_WEIGHT = "weight";
+    public static final String KEY_AVG = "average";
 
     private static String DROP_STATEMENT = "DROP TABLE IF EXISTS " + TABLE_NAME;
     private static String CREATE_STATEMENT;
@@ -33,7 +34,8 @@ public class CategoryDataAdapter {
         sb.append(KEY_ID + " integer primary key autoincrement, ");
         sb.append(KEY_NAME + " text, ");
         sb.append(KEY_WEIGHT + " double, ");
-        sb.append(KEY_CLASS + " long");
+        sb.append(KEY_CLASS + " long, ");
+        sb.append(KEY_AVG + "double");
         sb.append(")");
         CREATE_STATEMENT = sb.toString();
     }
@@ -53,7 +55,7 @@ public class CategoryDataAdapter {
         mDatabase.close();
     }
 
-    private ContentValues getContentValuesFromScore(Category category) {
+    private ContentValues getContentValuesFromCategory(Category category) {
         ContentValues row = new ContentValues();
         row.put(KEY_NAME, category.getTitle());
         row.put(KEY_WEIGHT, category.getWeight());
@@ -68,7 +70,7 @@ public class CategoryDataAdapter {
      * @return id of the inserted row or -1 if failed
      */
     public long addCategory(Category category) {
-        ContentValues row = getContentValuesFromScore(category);
+        ContentValues row = getContentValuesFromCategory(category);
         long rowId = mDatabase.insert(TABLE_NAME, null, row);
         category.setId(rowId);
         return rowId;
@@ -77,6 +79,11 @@ public class CategoryDataAdapter {
     public Cursor getCategorysCursor(long id) {
         String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_WEIGHT, KEY_CLASS};
         return mDatabase.query(TABLE_NAME, projection, KEY_CLASS + " = " + id, null, null, null,
+                KEY_WEIGHT + " DESC");
+    }
+    public Cursor getCategorysCursor(String id) {
+        String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_WEIGHT, KEY_CLASS};
+        return mDatabase.query(TABLE_NAME, projection, KEY_NAME + " = " + "'" + id + "'", null, null, null,
                 KEY_WEIGHT + " DESC");
     }
     public Cursor getCategorysCursor() {
@@ -88,6 +95,17 @@ public class CategoryDataAdapter {
     public Category getCategory(long id) {
         String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_WEIGHT, KEY_CLASS};
         String selection = KEY_ID + " = " + id;
+        boolean distinctRows = true;
+        Cursor c = mDatabase.query(distinctRows, TABLE_NAME, projection,
+                selection, null, null, null, null, null);
+        if (c != null && c.moveToFirst()) {
+            return getCategoryFromCursor(c);
+        }
+        return null;
+    }
+    public Category getCategory(String catName) {
+        String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_WEIGHT, KEY_CLASS};
+        String selection = KEY_NAME + " = " + "'" + catName + "'";
         boolean distinctRows = true;
         Cursor c = mDatabase.query(distinctRows, TABLE_NAME, projection,
                 selection, null, null, null, null, null);
@@ -116,7 +134,7 @@ public class CategoryDataAdapter {
     }
 
     public void updateCategory(Category category) {
-        ContentValues row = getContentValuesFromScore(category);
+        ContentValues row = getContentValuesFromCategory(category);
         String selection = KEY_ID + " = " + category.getId();
         mDatabase.update(TABLE_NAME, row, selection, null);
     }

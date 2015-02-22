@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -64,12 +65,12 @@ public class CourseFragment extends Fragment {
         mCursorAdapter = new SimpleCursorTreeAdapter(this.getActivity(), categoryCursor,
                 R.layout.course_list_group,
                 R.layout.course_list_group,
-                new String[]{CategoryDataAdapter.KEY_NAME},
-                new int[]{R.id.group_title},
+                new String[]{CategoryDataAdapter.KEY_NAME, CategoryDataAdapter.KEY_AVG},
+                new int[]{R.id.group_title, R.id.group_value},
                 R.layout.course_list_item,
                 R.layout.course_list_item,
                 new String[]{AssignmentDataAdapter.KEY_NAME, AssignmentDataAdapter.KEY_SCORE},
-                new int[]{R.id.assignment_title, R.id.assignment_grade}) {
+                new int[]{R.id.assignment_title, R.id.grade_value}) {
             @Override
             protected Cursor getChildrenCursor(Cursor groupCursor) {
                 return mAssignmentDataAdapter.getAssignmentsCursor(groupCursor.getString(groupCursor.getColumnIndexOrThrow(CategoryDataAdapter.KEY_NAME)));
@@ -153,12 +154,11 @@ public class CourseFragment extends Fragment {
         mCursorAdapter.changeCursor(cursor);
     }
 
-    static void addAssignment(Assignment a) {
+    static void addAssignment(Assignment a, int catPos) {
         mAssignmentDataAdapter.addAssignment(a);
         Cursor cursor = mAssignmentDataAdapter.getAssignmentsCursor(a.getCatId());
-        for(int i =0; i<mCategoryDataAdapter.getCategorysCursor(courseId).getCount();i++) {
-            mCursorAdapter.setChildrenCursor(i, cursor);
-        }
+        Cursor catCurse = mCategoryDataAdapter.getCategorysCursor(a.getCatId());
+        mCursorAdapter.setChildrenCursor(catPos, cursor);
         mAssignmentDataAdapter.logAll();
     }
 

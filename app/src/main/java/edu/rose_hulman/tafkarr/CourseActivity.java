@@ -32,10 +32,10 @@ public class CourseActivity extends Activity implements AddCategoryDialogFragmen
     }
 
     @Override
-    public void onDialogPositiveClick(DialogFragment dialog, String assignmentName, String catName, int assignmentGrade) {
+    public void onDialogPositiveClick(DialogFragment dialog, String assignmentName, String catName, int assignmentGrade, int catPos) {
         Assignment a = new Assignment(assignmentName, assignmentGrade);
         a.setCatId(catName);
-        CourseFragment.addAssignment(a);
+        CourseFragment.addAssignment(a, catPos);
     }
 
     @Override
