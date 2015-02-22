@@ -24,10 +24,17 @@
     <string name="schedule_lookup_field_required">Search query required</string>
     <string name="add_categories">Add category</string>
     <string name="add_assignment">Add assignment</string>
-
+    <string name="required_field">This field is required.</string>
     <string name="courses">Courses</string>
     <string name="schedule_lookup">Schedule Lookup</string>
-
+    <string name="prefs_key_auth_shared">auth</string>
+    <string name="prefs_key_username_shared">username</string>
+    <string name="prefs_key_term">curr_term</string>
+    <string name="load_courses">Load Current Term Courses</string>
+    <string name="schedule_lookup_base">https://prodweb.rose-hulman.edu/regweb-cgi/reg-sched.pl</string>
+    <string name="ical_base">https://prodweb.rose-hulman.edu/regweb/calendar/%1$s.ics</string>
+    <string name="sync">Sync term with Google Calendar</string>
+    <string name="pick_account">You must select an account.</string>
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

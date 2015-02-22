@@ -14,14 +14,16 @@ public class Course implements Parcelable {
     private double mCourseGrade;
     private long mId;
 
-    public Course(){}
+    public Course() {
+    }
 
-    public Course(String title, double targetGrade, double courseGrade){
+    public Course(String title, double targetGrade, double courseGrade) {
         mTitle = title;
         mTargetGrade = targetGrade;
         mCourseGrade = courseGrade;
     }
-    public Course(Parcel source){
+
+    public Course(Parcel source) {
         mTitle = source.readString();
         mTargetGrade = source.readDouble();
         mCourseGrade = source.readDouble();
@@ -46,14 +48,16 @@ public class Course implements Parcelable {
     public double getCourseGrade() {
         return mCourseGrade;
     }
-    public void setCourseGrade(double grade){
-        mCourseGrade= grade;
+
+    public void setCourseGrade(double grade) {
+        mCourseGrade = grade;
     }
 
-    public long getId(){
+    public long getId() {
         return mId;
     }
-    public void setId(long newId){
+
+    public void setId(long newId) {
         mId = newId;
     }
 
@@ -68,6 +72,7 @@ public class Course implements Parcelable {
         dest.writeDouble(mTargetGrade);
         dest.writeDouble(mCourseGrade);
     }
+
     public static final Parcelable.Creator<Course> CREATOR = new Parcelable.Creator<Course>() {
 
         @Override

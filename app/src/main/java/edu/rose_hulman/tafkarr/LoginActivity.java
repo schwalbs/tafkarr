@@ -36,7 +36,6 @@ public class LoginActivity extends Activity {
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginTask mAuthTask = null;
-    public static final String SHARED_PREF_AUTH_KEY = "auth";
 
     // UI references.
     private EditText mUsernameView;
@@ -52,7 +51,7 @@ public class LoginActivity extends Activity {
 
         mSharedPrefs = getSharedPreferences(
                 getString(R.string.shared_prefs_file), MODE_PRIVATE);
-        String auth = mSharedPrefs.getString(SHARED_PREF_AUTH_KEY,
+        String auth = mSharedPrefs.getString(getString(R.string.prefs_key_auth_shared),
                 null);
         if (auth != null) {
             if (!auth.isEmpty()) {
@@ -112,14 +111,14 @@ public class LoginActivity extends Activity {
 
         // Check for a valid password, if the user entered one.
         if (TextUtils.isEmpty(password)) {
-            mPasswordView.setError(getString(R.string.error_field_required));
+            mPasswordView.setError(getString(R.string.required_field));
             focusView = mPasswordView;
             cancel = true;
         }
 
         // Check for a valid username address.
         if (TextUtils.isEmpty(username)) {
-            mUsernameView.setError(getString(R.string.error_field_required));
+            mUsernameView.setError(getString(R.string.required_field));
             focusView = mUsernameView;
             cancel = true;
         }
@@ -196,8 +195,7 @@ public class LoginActivity extends Activity {
         protected Boolean doInBackground(Void... params) {
             Boolean verified = false;
             try {
-                HttpPost req = new HttpPost(
-                        "https://prodweb.rose-hulman.edu/regweb-cgi/reg-sched.pl");
+                HttpPost req = new HttpPost(getString(R.string.schedule_lookup_base));
                 // authentication
                 String authorization = new String(
                         Base64.encodeBase64((mUsername + ":" + mPassword)
@@ -229,7 +227,8 @@ public class LoginActivity extends Activity {
                 String authorization = new String(
                         Base64.encodeBase64((mUsername + ":" + mPassword)
                                 .getBytes()));
-                editor.putString("auth", authorization);
+                editor.putString(getString(R.string.prefs_key_auth_shared), authorization);
+                editor.putString(getString(R.string.prefs_key_username_shared), mUsername);
                 editor.commit();
                 goToMainActivity();
             } else {

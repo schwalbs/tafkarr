@@ -3,6 +3,7 @@ package edu.rose_hulman.tafkarr;
 import java.util.Locale;
 
 
+import android.accounts.AccountManager;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.DialogFragment;
@@ -19,6 +20,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.widget.Toast;
+
+import com.google.android.gms.common.AccountPicker;
 
 
 public class MainActivity extends Activity implements ActionBar.TabListener,AddClassDialogFragment.addClassDialogListener {
@@ -37,12 +41,18 @@ public class MainActivity extends Activity implements ActionBar.TabListener,AddC
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
+    private String mEmail;
+    private SharedPreferences mSharedPrefs;
+    private static final int REQUEST_CODE_PICK_ACCOUNT = 1;
+    private static final String SCOPE = "oauth2:https://www.googleapis.com/auth/calendar";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mSharedPrefs = getSharedPreferences(
+                getString(R.string.shared_prefs_file), MODE_PRIVATE);
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -92,14 +102,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener,AddC
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_sign_out) {
             //remove the saved authorization
-            SharedPreferences sharedPrefs = getSharedPreferences(
-                    getString(R.string.shared_prefs_file), MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPrefs.edit();
-            editor.remove(ScheduleLookupFragment.SHARED_PREF_AUTH_KEY);
+
+            SharedPreferences.Editor editor = mSharedPrefs.edit();
+            editor.remove(getString(R.string.prefs_key_auth_shared));
+            editor.remove(getString(R.string.prefs_key_username_shared));
             editor.commit();
 
             //go back to login
@@ -107,6 +116,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener,AddC
             this.startActivity(i);
             finish();
             return true;
+        } else if (id == R.id.sync_calendar) {
+            //pickUserAccount();
+            new GetTermCalenderDataTask(this, Util.getCurrentTerm(), null).execute();
+        } else if (id == R.id.load_courses){
+            String username = mSharedPrefs.getString(getString(R.string.prefs_key_username_shared), "");
+            String authorization = mSharedPrefs.getString(getString(R.string.prefs_key_auth_shared), "");
+            new LoadCurrentTermCoursesTask(this, username, authorization, null).execute();
         }
         if (id == R.id.add_class){
             AddClassDialogFragment newDialog = new AddClassDialogFragment();
@@ -114,6 +130,35 @@ public class MainActivity extends Activity implements ActionBar.TabListener,AddC
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    private void pickUserAccount() {
+        String[] accountTypes = new String[]{"com.google"};
+        Intent intent = AccountPicker.newChooseAccountIntent(null, null,
+                accountTypes, false, null, null, null, null);
+        startActivityForResult(intent, REQUEST_CODE_PICK_ACCOUNT);
+    }
+    private void getUsername() {
+        if (mEmail == null) {
+            pickUserAccount();
+        } else {
+             new GetUsernameTask(this, mEmail, SCOPE).execute();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_PICK_ACCOUNT) {
+            // Receiving a result from the AccountPicker
+            if (resultCode == RESULT_OK) {
+                mEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                // With the account name acquired, go get the auth token
+                getUsername();
+            } else if (resultCode == RESULT_CANCELED) {
+                // The account picker dialog closed without selecting an account.
+                // Notify users that they must pick an account to proceed.
+                Toast.makeText(this, R.string.pick_account, Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
@@ -217,5 +262,4 @@ public class MainActivity extends Activity implements ActionBar.TabListener,AddC
             return rootView;
         }
     }
-
 }

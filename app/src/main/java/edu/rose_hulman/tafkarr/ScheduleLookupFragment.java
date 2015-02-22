@@ -1,6 +1,7 @@
 package edu.rose_hulman.tafkarr;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -26,10 +27,9 @@ import android.widget.TextView;
 
 
 public class ScheduleLookupFragment extends Fragment {
-    public static final String SHARED_PREF_AUTH_KEY = "auth";
     private static final String RESULTS_BUNDLE_KEY = "results";
 
-    private SharedPreferences msharedPrefs;
+    private SharedPreferences mSharedPrefs;
     private EditText mSearch;
     private Spinner mTermSelect;
     private Button mSubmit;
@@ -49,7 +49,7 @@ public class ScheduleLookupFragment extends Fragment {
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_schedule_lookup, container, false);
 
-        msharedPrefs = getActivity().getSharedPreferences(
+        mSharedPrefs = getActivity().getSharedPreferences(
                 getString(R.string.shared_prefs_file), Activity.MODE_PRIVATE);
 
         ArrayList<String> results = savedInstanceState == null ? null
@@ -70,9 +70,11 @@ public class ScheduleLookupFragment extends Fragment {
         mSearch = (EditText) root.findViewById(R.id.usernameSearchInput);
 
         mTermSelect = (Spinner) root.findViewById(R.id.termSelect);
+
+        String[] terms = getResources().getStringArray(R.array.terms);
         mTermSelect.setAdapter(new ArrayAdapter<>(getActivity(),
-                android.R.layout.simple_spinner_item, getResources()
-                .getStringArray(R.array.terms)));
+                android.R.layout.simple_spinner_item, terms));
+        mTermSelect.setSelection(Arrays.asList(terms).indexOf(Util.getCurrentTerm()));
 
         mSubmit = (Button) root.findViewById(R.id.search);
         mSubmit.setOnClickListener(new OnClickListener() {
@@ -120,10 +122,10 @@ public class ScheduleLookupFragment extends Fragment {
             String search = mSearch.getText().toString();
 
             // ResultsTask asyncRTask = new ResultsTask();
-            ScheduleLookupRequest asyncRTask = new ScheduleLookupRequest(getActivity(),
+            ScheduleLookupTask asyncRTask = new ScheduleLookupTask(getActivity(),
                     mResultsList, mResultsListAdapter, mProgress);
             asyncRTask.execute(
-                    msharedPrefs.getString(SHARED_PREF_AUTH_KEY, ""), term,
+                    mSharedPrefs.getString(getString(R.string.prefs_key_auth_shared), ""), term,
                     search);
 
         } catch (Exception e) {
