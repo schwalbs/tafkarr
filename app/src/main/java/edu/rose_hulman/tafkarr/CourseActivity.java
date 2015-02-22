@@ -2,6 +2,8 @@ package edu.rose_hulman.tafkarr;
 
 import android.app.Activity;
 import android.app.DialogFragment;
+import android.app.LoaderManager;
+import android.content.Loader;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,7 +11,7 @@ import android.view.MenuItem;
 import static android.app.PendingIntent.getActivity;
 
 
-public class CourseActivity extends Activity implements AddCategoryDialogFragment.addCategoryDialogListener,AddAssignmentDialogFragment.addAssignmentDialogListener{
+public class CourseActivity extends Activity implements AddCategoryDialogFragment.addCategoryDialogListener,AddAssignmentDialogFragment.addAssignmentDialogListener, LoaderManager.LoaderCallbacks<Object> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,11 +37,27 @@ public class CourseActivity extends Activity implements AddCategoryDialogFragmen
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialog, String assignmentName, String catName, int assignmentGrade) {
-        CourseFragment.addAssignment(this, assignmentName, catName, assignmentGrade);
+        Assignment a = new Assignment(assignmentName, assignmentGrade);
+        CourseFragment.addAssignment(a);
     }
 
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
+
+    }
+
+    @Override
+    public Loader<Object> onCreateLoader(int id, Bundle args) {
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Object> loader, Object data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Object> loader) {
 
     }
 }

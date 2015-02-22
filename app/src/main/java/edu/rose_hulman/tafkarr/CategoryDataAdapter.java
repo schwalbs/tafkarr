@@ -7,11 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class ClassDataAdapter {
+public class CategoryDataAdapter {
     // Becomes the filename of the database
-    private static final String DATABASE_NAME = "courses.db";
+    private static final String DATABASE_NAME = "categorys.db";
     // Only one table in this database
-    private static final String TABLE_NAME = "courses";
+    private static final String TABLE_NAME = "categorys";
     // We increment this every time we change the database schema which will
     // kick off an automatic upgrade
     private static final int DATABASE_VERSION = 1;
@@ -22,7 +22,8 @@ public class ClassDataAdapter {
     // Android naming convention for IDs
     public static final String KEY_ID = "_id";
     public static final String KEY_NAME = "name";
-    public static final String KEY_SCORE = "score";
+    public static final String KEY_CLASS = "class";
+    public static final String KEY_WEIGHT = "weight";
 
     private static String DROP_STATEMENT = "DROP TABLE IF EXISTS " + TABLE_NAME;
     private static String CREATE_STATEMENT;
@@ -31,12 +32,13 @@ public class ClassDataAdapter {
         sb.append("CREATE TABLE " + TABLE_NAME + " (");
         sb.append(KEY_ID + " integer primary key autoincrement, ");
         sb.append(KEY_NAME + " text, ");
-        sb.append(KEY_SCORE + " double");
+        sb.append(KEY_WEIGHT + " double, ");
+        sb.append(KEY_CLASS + " long");
         sb.append(")");
         CREATE_STATEMENT = sb.toString();
     }
 
-    public ClassDataAdapter(Context context) {
+    public CategoryDataAdapter(Context context) {
         // Create a SQLiteOpenHelper
         mOpenHelper = new ScoreDbHelper(context);
     }
@@ -51,72 +53,71 @@ public class ClassDataAdapter {
         mDatabase.close();
     }
 
-    private ContentValues getContentValuesFromScore(Course course) {
+    private ContentValues getContentValuesFromScore(Category category) {
         ContentValues row = new ContentValues();
-        row.put(KEY_NAME, course.getTitle());
-        row.put(KEY_SCORE, course.getCourseGrade());
+        row.put(KEY_NAME, category.getTitle());
+        row.put(KEY_WEIGHT, category.getWeight());
+        row.put(KEY_CLASS, category.getClassId());
         return row;
     }
 
     /**
      * Add score to the table.
      *
-     * @param course
+     * @param category
      * @return id of the inserted row or -1 if failed
      */
-    public long addScore(Course course) {
-        ContentValues row = getContentValuesFromScore(course);
+    public long addCategory(Category category) {
+        ContentValues row = getContentValuesFromScore(category);
         long rowId = mDatabase.insert(TABLE_NAME, null, row);
-        course.setId(rowId);
+        category.setId(rowId);
         return rowId;
     }
 
-    public Cursor getScoresCursor() {
-        String[] projection = new String[] { KEY_ID, KEY_NAME, KEY_SCORE };
+    public Cursor getCategorysCursor() {
+        String[] projection = new String[] { KEY_ID, KEY_NAME, KEY_WEIGHT, KEY_CLASS};
         return mDatabase.query(TABLE_NAME, projection, null, null, null, null,
-                KEY_SCORE + " DESC");
+                KEY_WEIGHT + " DESC");
     }
 
-    public Course getScore(long id) {
-        String[] projection = new String[] { KEY_ID, KEY_NAME, KEY_SCORE };
+    public Category getCategory(long id) {
+        String[] projection = new String[] { KEY_ID, KEY_NAME, KEY_WEIGHT,KEY_CLASS };
         String selection = KEY_ID + " = " + id;
         boolean distinctRows = true;
         Cursor c = mDatabase.query(distinctRows, TABLE_NAME, projection,
                 selection, null, null, null, null, null);
         if (c != null && c.moveToFirst()) {
-            return getScoreFromCursor(c);
+            return getCategoryFromCursor(c);
         }
         return null;
     }
 
-    private Course getScoreFromCursor(Cursor c) {
-        Course course = new Course();
-        course.setId(c.getInt(c.getColumnIndexOrThrow(KEY_ID)));
-        course.setTitle(c.getString(c.getColumnIndexOrThrow(KEY_NAME)));
-        course.setCourseGrade(c.getDouble(c.getColumnIndexOrThrow(KEY_SCORE)));
-        return course;
+    private Category getCategoryFromCursor(Cursor c) {
+        Category category = new Category(c.getString(c.getColumnIndexOrThrow(KEY_NAME)),c.getDouble(c.getColumnIndexOrThrow(KEY_WEIGHT)),c.getLong(c.getColumnIndexOrThrow(KEY_CLASS)) );
+        category.setId(c.getInt(c.getColumnIndexOrThrow(KEY_ID)));
+        return category;
     }
 
-    public void updateScore(Course course) {
-        ContentValues row = getContentValuesFromScore(course);
-        String selection = KEY_ID + " = " + course.getId();
+    public void updateCategory(Category category) {
+        ContentValues row = getContentValuesFromScore(category);
+        String selection = KEY_ID + " = " + category.getId();
         mDatabase.update(TABLE_NAME, row, selection, null);
     }
 
-    public boolean removeScore(long id) {
+    public boolean removeCategory(long id) {
         return mDatabase.delete(TABLE_NAME, KEY_ID + " = " + id, null) > 0;
     }
 
-    public boolean removeScore(Course c) {
-        return removeScore(c.getId());
+    public boolean removeCategory(Category c) {
+        return removeCategory(c.getId());
     }
 
     public void logAll() {
-        Cursor c = getScoresCursor();
+        Cursor c = getCategorysCursor();
         if (c != null && c.moveToFirst()) {
 //            Log.d(ScoresListActivity.SLS, "LOGGING TABLE");
             while (!c.isAfterLast()) {
-                Course course = getScoreFromCursor(c);
+                Category category = getCategoryFromCursor(c);
 //                Log.d(ScoresListActivity.SLS, score.toString());
                 c.moveToNext();
             }
