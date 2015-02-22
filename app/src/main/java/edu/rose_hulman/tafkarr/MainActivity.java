@@ -13,26 +13,12 @@ import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-
-import java.util.Locale;
 
 
 public class MainActivity extends Activity implements ActionBar.TabListener, AddCourseDialogFragment.AddCourseDialogListener {
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link android.support.v4.app.FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
     SectionsPagerAdapter mSectionsPagerAdapter;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     private ViewPager mViewPager;
     private SharedPreferences mSharedPrefs;
 
@@ -41,65 +27,36 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Add
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mSharedPrefs = getSharedPreferences(
-                getString(R.string.shared_prefs_file), MODE_PRIVATE);
-        // Set up the action bar.
-        final ActionBar actionBar = getActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
+        mSharedPrefs = getSharedPreferences(getString(R.string.shared_prefs_file), MODE_PRIVATE);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        // When swiping between different sections, select the corresponding
-        // tab. We can also use ActionBar.Tab#select() to do this if we have
-        // a reference to the Tab.
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                actionBar.setSelectedNavigationItem(position);
-            }
-        });
-
-        // For each of the sections in the app, add a tab to the action bar.
-        for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-            // Create a tab with text corresponding to the page title defined by
-            // the adapter. Also specify this Activity object, which implements
-            // the TabListener interface, as the callback (listener) for when
-            // this tab is selected.
-            actionBar.addTab(
-                    actionBar.newTab()
-                            .setText(mSectionsPagerAdapter.getPageTitle(i))
-                            .setTabListener(this));
+        // make the tabs look like they're part of the actionbar
+        if (getActionBar() != null) {
+            findViewById(R.id.pager_title_strip).setElevation(getActionBar().getElevation());
+            getActionBar().setElevation(0);
         }
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_sign_out) {
             //remove the saved authorization
-
             SharedPreferences.Editor editor = mSharedPrefs.edit();
             editor.remove(getString(R.string.prefs_key_auth_shared));
             editor.remove(getString(R.string.prefs_key_username_shared));
-            editor.commit();
+            editor.apply();
 
             //go back to login
             Intent i = new Intent(this, LoginActivity.class);
@@ -109,29 +66,25 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Add
         } else if (id == R.id.load_courses) {
             String username = mSharedPrefs.getString(getString(R.string.prefs_key_username_shared), "");
             String authorization = mSharedPrefs.getString(getString(R.string.prefs_key_auth_shared), "");
-
-
-            View[] viewsToHide = new View[]{};
             new LoadCurrentTermCoursesTask(this, username, authorization).execute();
         }
-
         return super.onOptionsItemSelected(item);
     }
 
 
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        // When the given tab is selected, switch to the corresponding page in
-        // the ViewPager.
         mViewPager.setCurrentItem(tab.getPosition());
     }
 
     @Override
     public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        // nothing special to do
     }
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        // nothing special to do
     }
 
     @Override
@@ -141,11 +94,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Add
         CourseListFragment.addCourse(newCourse);
     }
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        private Fragment[] fragments = new Fragment[]{new CourseListFragment(), new ScheduleLookupFragment()};
+        private String[] mFragmentTitles = new String[]{"Courses", "Schedule Lookup"};
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -153,35 +105,23 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Add
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            switch (position) {
-                case 0:
-                    return new CourseListFragment();
-                case 1:
-                    return new ScheduleLookupFragment();
-                default:
-                    return null;
+            if (position >= 0 && position <= getCount()) {
+                return fragments[position];
             }
+            return null;
         }
 
         @Override
         public int getCount() {
-            return 2;
+            return fragments.length;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            Locale l = Locale.getDefault();
-            switch (position) {
-                case 0:
-                    return getString(R.string.courses);
-                case 1:
-                    return getString(R.string.schedule_lookup);
+            if (position >= 0 && position <= getCount()) {
+                return mFragmentTitles[position];
             }
             return null;
         }
     }
-
-
 }

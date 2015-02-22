@@ -46,8 +46,6 @@ public class ScheduleLookupResultsListAdapter extends
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
         holder.setData(mDataset.get(position));
 
     }

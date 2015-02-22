@@ -7,15 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class CategoryDataAdapter {
-    // Becomes the filename of the database
     private static final String DATABASE_NAME = "categorys.db";
-    // Only one table in this database
     private static final String TABLE_NAME = "categorys";
-    // We increment this every time we change the database schema which will
-    // kick off an automatic upgrade
     private static final int DATABASE_VERSION = 4;
 
-    // TODO: Implement a SQLite database
     private SQLiteOpenHelper mOpenHelper;
     private SQLiteDatabase mDatabase;
     // Android naming convention for IDs
@@ -34,8 +29,7 @@ public class CategoryDataAdapter {
         sb.append(KEY_ID + " integer primary key autoincrement, ");
         sb.append(KEY_NAME + " text, ");
         sb.append(KEY_WEIGHT + " double, ");
-        sb.append(KEY_CLASS + " long, ");
-        sb.append(KEY_AVG + "double");
+        sb.append(KEY_CLASS + " long");
         sb.append(")");
         CREATE_STATEMENT = sb.toString();
     }
@@ -63,12 +57,7 @@ public class CategoryDataAdapter {
         return row;
     }
 
-    /**
-     * Add score to the table.
-     *
-     * @param category
-     * @return id of the inserted row or -1 if failed
-     */
+
     public long addCategory(Category category) {
         ContentValues row = getContentValuesFromCategory(category);
         long rowId = mDatabase.insert(TABLE_NAME, null, row);
@@ -76,17 +65,17 @@ public class CategoryDataAdapter {
         return rowId;
     }
 
-    public Cursor getCategorysCursor(long id) {
+    public Cursor getCategoriesCursor(long id) {
         String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_WEIGHT, KEY_CLASS};
         return mDatabase.query(TABLE_NAME, projection, KEY_CLASS + " = " + id, null, null, null,
                 KEY_WEIGHT + " DESC");
     }
-    public Cursor getCategorysCursor(String id) {
+    public Cursor getCategoriesCursor(String id) {
         String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_WEIGHT, KEY_CLASS};
         return mDatabase.query(TABLE_NAME, projection, KEY_NAME + " = " + "'" + id + "'", null, null, null,
                 KEY_WEIGHT + " DESC");
     }
-    public Cursor getCategorysCursor() {
+    public Cursor getCategoriesCursor() {
         String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_WEIGHT, KEY_CLASS};
         return mDatabase.query(TABLE_NAME, projection, null, null, null, null,
                 KEY_WEIGHT + " DESC");
@@ -148,7 +137,7 @@ public class CategoryDataAdapter {
     }
 
     public void logAll() {
-        Cursor c = getCategorysCursor();
+        Cursor c = getCategoriesCursor();
         if (c != null && c.moveToFirst()) {
 //            Log.d(ScoresListActivity.SLS, "LOGGING TABLE");
             while (!c.isAfterLast()) {

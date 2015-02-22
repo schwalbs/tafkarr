@@ -11,12 +11,10 @@ import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -32,7 +30,6 @@ public class ScheduleLookupFragment extends Fragment {
     private SharedPreferences mSharedPrefs;
     private EditText mSearch;
     private Spinner mTermSelect;
-    private Button mSubmit;
     private ProgressBar mProgress;
     private RecyclerView mResultsList;
     private ScheduleLookupResultsListAdapter mResultsListAdapter;
@@ -76,19 +73,11 @@ public class ScheduleLookupFragment extends Fragment {
                 android.R.layout.simple_spinner_item, terms));
         mTermSelect.setSelection(Arrays.asList(terms).indexOf(Util.getCurrentTerm()));
 
-        mSubmit = (Button) root.findViewById(R.id.search);
-        mSubmit.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                performSearch();
-            }
-        });
-
         mSearch.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id,
                                           KeyEvent keyEvent) {
-                if (id == R.id.searchIME || id == EditorInfo.IME_NULL) {
+                if (id == EditorInfo.IME_ACTION_SEARCH || id == EditorInfo.IME_NULL) {
                     performSearch();
                     return true;
                 }

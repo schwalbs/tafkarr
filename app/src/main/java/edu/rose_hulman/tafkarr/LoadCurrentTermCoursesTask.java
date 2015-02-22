@@ -4,16 +4,8 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.Toast;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -21,11 +13,7 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
-/**
- * Created by gartzkds on 2/21/2015.
- */
 public class LoadCurrentTermCoursesTask extends
         AsyncTask<Void, Void, ArrayList<Course>> {
 
@@ -43,17 +31,13 @@ public class LoadCurrentTermCoursesTask extends
 
     @Override
     protected ArrayList<Course> doInBackground(Void... params) {
-        try {
-            DefaultHttpClient httpclient = new DefaultHttpClient();
-            ResponseHandler<String> handler = new BasicResponseHandler();
-            String response = httpclient.execute(getRequest(), handler);
-
-            ArrayList<Course> courses = parseResponse(Jsoup.parse(response));
-            return courses;
-        } catch (Exception e) {
-            Log.e("ERROR", e.getMessage());
+        String response = Util.sendHttpRequest(mContext, Util.getScheduleLookupSearchRequest(mContext, mTerm, mUsername, mAuthorization));
+        if (response == null) {
             return null;
         }
+
+        return parseResponse(Jsoup.parse(response));
+
     }
 
     @Override
@@ -68,7 +52,7 @@ public class LoadCurrentTermCoursesTask extends
     protected void onPostExecute(ArrayList<Course> result) {
         super.onPostExecute(result);
         if (result == null) {
-            Toast.makeText(mContext, "Errors while fetching schedule", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, mContext.getString(R.string.error_loading_courses), Toast.LENGTH_SHORT).show();
         } else {
             int numAdded = CourseListFragment.addCoursesCheckUniqueName(result);
             mProgress.dismiss();
@@ -77,29 +61,8 @@ public class LoadCurrentTermCoursesTask extends
 
     }
 
-
-    private HttpPost getRequest() {
-        try {
-            HttpPost req = new HttpPost(mContext.getString(R.string.schedule_lookup_base));
-            List<NameValuePair> reqParams = new ArrayList<>(2);
-            // term
-            reqParams.add(new BasicNameValuePair("termcode", mTerm));
-            reqParams.add(new BasicNameValuePair("view", "grid"));
-            // username
-            reqParams.add(new BasicNameValuePair("id1", mUsername));
-            reqParams.add(new BasicNameValuePair("bt1", "ID%2FUsername"));
-            req.setEntity(new UrlEncodedFormEntity(reqParams));
-            // authentication
-            req.addHeader("Authorization", "Basic " + mAuthorization);
-            return req;
-        } catch (Exception e) {
-            Log.e("ERROR", e.getMessage());
-            return null;
-        }
-    }
-
     private ArrayList<Course> parseResponse(Document doc) {
-        ArrayList<Course> courses = new ArrayList<Course>();
+        ArrayList<Course> courses = new ArrayList<>();
         //get the schedule
         Element schedule = doc.select("table").get(1);
         Iterator<Element> rows = schedule.select("tr").iterator();

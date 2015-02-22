@@ -3,18 +3,10 @@ package edu.rose_hulman.tafkarr;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -22,7 +14,6 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 public class ScheduleLookupTask extends
         AsyncTask<String, String, ArrayList<String>> {
@@ -46,30 +37,25 @@ public class ScheduleLookupTask extends
         if (params.length < 3) {
             return null;
         }
-        ArrayList<String> data = new ArrayList<>();
-        try {
-            String authorization = params[0];
-            String term = params[1];
-            String userSearch = params[2];
-            DefaultHttpClient httpclient = new DefaultHttpClient();
-
-            ResponseHandler<String> handler = new BasicResponseHandler();
-            String response = httpclient.execute(getRequest(term, userSearch, authorization), handler);
-
-            // check if multiple/partial users received
-            Document doc = Jsoup.parse(response);
-            if (searchShowsOneUser(doc)) {
-                // only 1 user
-                data.add(parseUserSearchHTML(doc));
-            } else {
-                // go through and query all other users
-                data.addAll(searchMultiple(doc, term, authorization));
-            }
-
-        } catch (Exception e) {
-            Log.e("ERROR", e.getMessage());
+        String authorization = params[0];
+        String term = params[1];
+        String userSearch = params[2];
+        String response = Util.sendHttpRequest(mContext, (Util.getScheduleLookupSearchRequest(mContext, term, userSearch, authorization)));
+        if (response == null) {
             return null;
         }
+
+        // check if multiple/partial users received
+        Document doc = Jsoup.parse(response);
+        ArrayList<String> data = new ArrayList<>();
+        if (searchShowsOneUser(doc)) {
+            // only 1 user
+            data.add(parseUserSearchHTML(doc));
+        } else {
+            // go through and query all other users
+            data.addAll(searchMultiple(doc, term, authorization));
+        }
+
         return data;
     }
 
@@ -87,31 +73,6 @@ public class ScheduleLookupTask extends
 
     }
 
-    private HttpPost getRequest(String term, String userSearch, String authorization) {
-        try {
-            HttpPost req = new HttpPost(mContext.getString(R.string.schedule_lookup_base));
-            List<NameValuePair> reqParams = new ArrayList<>(2);
-            reqParams.add(new BasicNameValuePair("termcode", term));
-            reqParams.add(new BasicNameValuePair("view", "grid"));
-            // username
-            reqParams.add(new BasicNameValuePair("id1", userSearch));
-            reqParams.add(new BasicNameValuePair("bt1", "ID%2FUsername"));
-            // room number
-            reqParams.add(new BasicNameValuePair("id4", ""));
-            // params.add(new BasicNameValuePair("bt4", "Room"));
-            // course id
-            reqParams.add(new BasicNameValuePair("id5", ""));
-            // params.add(new BasicNameValuePair("bt5", "Course"));
-            req.setEntity(new UrlEncodedFormEntity(reqParams));
-            // authentication
-            req.addHeader("Authorization", "Basic " + authorization);
-            return req;
-        } catch (Exception e) {
-            Log.e("ERROR", e.getMessage());
-            return null;
-        }
-    }
-
     private ArrayList<String> searchMultiple(Document doc, String term,
                                              String authorization) {
         ArrayList<String> compiled = new ArrayList<>();
@@ -126,25 +87,14 @@ public class ScheduleLookupTask extends
         return compiled;
     }
 
-    private String singleSearch(String term, String userSearch,
-                                String authorization) {
-        String data = "";
-        try {
-            DefaultHttpClient httpclient = new DefaultHttpClient();
-
-            ResponseHandler<String> handler = new BasicResponseHandler();
-            String response = httpclient.execute(getRequest(term, userSearch, authorization), handler);
-            Document doc = Jsoup.parse(response);
-
-            // Get name
-            // Name: [name] Major: [major] Year: [year] Advisor: [advisor]
-
-            data += parseUserSearchHTML(doc);
-
-        } catch (Exception e) {
-            Log.e("ERROR", e.getMessage());
+    private String singleSearch(String term, String userSearch, String authorization) {
+        String response = Util.sendHttpRequest(mContext, (Util.getScheduleLookupSearchRequest(mContext, term, userSearch, authorization)));
+        if (response == null) {
+            return "";
         }
-        return data;
+
+        Document doc = Jsoup.parse(response);
+        return parseUserSearchHTML(doc);
     }
 
     private boolean searchShowsOneUser(Document doc) {

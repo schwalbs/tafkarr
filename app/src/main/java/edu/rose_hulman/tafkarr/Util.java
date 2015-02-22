@@ -1,6 +1,20 @@
 package edu.rose_hulman.tafkarr;
 
+import android.content.Context;
+import android.util.Log;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 
 /**
@@ -36,4 +50,34 @@ public class Util {
         return term;
     }
 
+    public static String sendHttpRequest(Context context, HttpRequestBase request) {
+        try {
+            DefaultHttpClient httpclient = new DefaultHttpClient();
+            ResponseHandler<String> handler = new BasicResponseHandler();
+            return httpclient.execute(request, handler);
+        } catch (Exception e) {
+            Log.e(context.getString(R.string.log_error), e.getMessage());
+            return null;
+        }
+    }
+
+    public static HttpPost getScheduleLookupSearchRequest(Context context, String term, String username, String authorization) {
+        try {
+            HttpPost req = new HttpPost(context.getString(R.string.schedule_lookup_base));
+            List<NameValuePair> reqParams = new ArrayList<>(2);
+            // term
+            reqParams.add(new BasicNameValuePair("termcode", term));
+            reqParams.add(new BasicNameValuePair("view", "grid"));
+            // username
+            reqParams.add(new BasicNameValuePair("id1", username));
+            reqParams.add(new BasicNameValuePair("bt1", "ID%2FUsername"));
+            req.setEntity(new UrlEncodedFormEntity(reqParams));
+            // authentication
+            req.addHeader("Authorization", "Basic " + authorization);
+            return req;
+        } catch (Exception e) {
+            Log.e(context.getString(R.string.log_error), e.getMessage());
+            return null;
+        }
+    }
 }

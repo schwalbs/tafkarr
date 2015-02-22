@@ -108,11 +108,7 @@ public class AddCategoryDialogFragment extends DialogFragment {
                     } else {
                         // Send the positive button event back to the host activity
                         mListener.onDialogConfirmClick(AddCategoryDialogFragment.this, mCategoryName, mCategoryWeight);
-                        try {
-                            this.finalize();
-                        } catch (Throwable throwable) {
-                            throwable.printStackTrace();
-                        }
+                        dismiss();
                     }
                 }
             });

@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.SimpleCursorAdapter;
@@ -61,7 +60,7 @@ public class AddAssignmentDialogFragment extends DialogFragment {
 
         mCatSpin = (Spinner) layoutView.findViewById(R.id.category_picker);
         CategoryDataAdapter mCategoryDataAdapter =  CourseFragment.mCategoryDataAdapter;
-        categories = mCategoryDataAdapter.getCategorysCursor(getActivity().getIntent().getLongExtra(CourseListFragment.courseId, -1));
+        categories = mCategoryDataAdapter.getCategoriesCursor(getActivity().getIntent().getLongExtra(CourseListFragment.courseId, -1));
         mCatSpin.setAdapter(new SimpleCursorAdapter(getActivity(), android.R.layout.simple_spinner_item, categories,new String[]{CategoryDataAdapter.KEY_NAME}, new int[]{android.R.id.text1}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER));
 
         mAssignmentGradeField = (EditText) layoutView.findViewById(R.id.assignment_grade);

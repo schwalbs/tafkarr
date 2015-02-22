@@ -9,16 +9,11 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class ClassDataAdapter {
     // Becomes the filename of the database
     private static final String DATABASE_NAME = "courses.db";
-    // Only one table in this database
     private static final String TABLE_NAME = "courses";
-    // We increment this every time we change the database schema which will
-    // kick off an automatic upgrade
     private static final int DATABASE_VERSION = 4;
 
-    // TODO: Implement a SQLite database
     private SQLiteOpenHelper mOpenHelper;
     private SQLiteDatabase mDatabase;
-    // Android naming convention for IDs
     public static final String KEY_ID = "_id";
     public static final String KEY_NAME = "name";
     public static final String KEY_SCORE = "score";

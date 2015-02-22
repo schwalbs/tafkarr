@@ -32,7 +32,6 @@ public class CourseMultiChoiceModeListener extends BaseMultiChoiceModeListener {
 
         mClFrag.removeCoursesByIds(idsToRemove);
 
-
         return true;
     }
 }
