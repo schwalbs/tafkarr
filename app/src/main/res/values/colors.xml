@@ -3,7 +3,9 @@
     <color name="primary">#EF5350</color>
     <color name="primary_dark">#E53935</color>
     <color name="accent">#0288D1</color>
+    <color name="accent_light">#29B6F6</color>
     <color name="text_primary">#000000</color>
     <color name="text_secondary">#E0E0E0</color>
     <color name="divider">#1F000000</color>
+    <color name="transparent">#00FFFFFF</color>
 </resources>

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 public class ClassDataAdapter {
     // Becomes the filename of the database
@@ -26,6 +25,7 @@ public class ClassDataAdapter {
 
     private static String DROP_STATEMENT = "DROP TABLE IF EXISTS " + TABLE_NAME;
     private static String CREATE_STATEMENT;
+
     static {
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE " + TABLE_NAME + " (");
@@ -72,13 +72,13 @@ public class ClassDataAdapter {
     }
 
     public Cursor getScoresCursor() {
-        String[] projection = new String[] { KEY_ID, KEY_NAME, KEY_SCORE };
+        String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_SCORE};
         return mDatabase.query(TABLE_NAME, projection, null, null, null, null,
                 KEY_SCORE + " DESC");
     }
 
     public Course getScore(long id) {
-        String[] projection = new String[] { KEY_ID, KEY_NAME, KEY_SCORE };
+        String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_SCORE};
         String selection = KEY_ID + " = " + id;
         boolean distinctRows = true;
         Cursor c = mDatabase.query(distinctRows, TABLE_NAME, projection,

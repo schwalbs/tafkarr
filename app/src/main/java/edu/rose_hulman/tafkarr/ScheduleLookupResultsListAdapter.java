@@ -1,5 +1,4 @@
 package edu.rose_hulman.tafkarr;
-import java.util.ArrayList;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,7 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-public class ScheduleLookupResultsListAdapter  extends
+import java.util.ArrayList;
+
+public class ScheduleLookupResultsListAdapter extends
         RecyclerView.Adapter<ScheduleLookupResultsListAdapter.ViewHolder> {
     private ArrayList<String> mDataset;
 
@@ -33,7 +34,7 @@ public class ScheduleLookupResultsListAdapter  extends
     // Create new views (invoked by the layout manager)
     @Override
     public ScheduleLookupResultsListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                            int viewType) {
+                                                                          int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext()).inflate(
                 R.layout.schedule_lookup_results_list_item, parent, false);
@@ -62,7 +63,7 @@ public class ScheduleLookupResultsListAdapter  extends
         this.notifyDataSetChanged();
     }
 
-    public ArrayList<String> getDataset(){
+    public ArrayList<String> getDataset() {
         return mDataset;
     }
 }

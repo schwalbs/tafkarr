@@ -25,18 +25,19 @@ public class CourseFragment extends Fragment {
     private static final String LOG_TAG = "TAG";
     public static ExpandableListAdapter listAdapter;
     public static ExpandableListView mListView;
-    public static List<String>listCategories;
+    public static List<String> listCategories;
     public static HashMap<String, List<Assignment>> mapAssignments;
     private static AssignmentDataAdapter mAssignmentDataAdapter;
     private static CategoryDataAdapter mCategoryDataAdapter;
     private static SimpleCursorTreeAdapter mCursorAdapter;
     private static long courseId;
-    private static final String[] CATEGORY_PROJECTION = new String[] {
+    public static final String[] CATEGORY_PROJECTION = new String[]{
             CategoryDataAdapter.KEY_NAME};
 
-    private static final String[] ASSIGNMENT_PROJECTION = new String[] {
+    public static final String[] ASSIGNMENT_PROJECTION = new String[]{
             AssignmentDataAdapter.KEY_NAME,
             AssignmentDataAdapter.KEY_SCORE};
+
 
 
     public CourseFragment() {
@@ -53,24 +54,22 @@ public class CourseFragment extends Fragment {
         mAssignmentDataAdapter.open();
         mCategoryDataAdapter = new CategoryDataAdapter(this.getActivity());
         mCategoryDataAdapter.open();
-        
+
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_course, container, false);
         mListView = (ExpandableListView) rootView.findViewById(R.id.expandableListView);
-        Cursor cursor = mCategoryDataAdapter.getCategorysCursor();
-        String[] fromColumns = new String[] { ClassDataAdapter.KEY_NAME,
-                ClassDataAdapter.KEY_SCORE };
-        int[] toTextViews = new int[] { R.id.courseRowTitle, R.id.courseRowGrade};
-//        mCursorAdapter = new SimpleCursorAdapter(this.getActivity(),
-//                R.layout.course_row, cursor, fromColumns, toTextViews, 0);
-//        mListView.setAdapter(mCursorAdapter);
-//        registerForContextMenu(mListView);
-//        listView.setAdapter(new CourseAdapter(getActivity(), listCategories, mapAssignments));
 
-        mCursorAdapter = new SimpleCursorTreeAdapter(this.getActivity(),cursor,
+        Cursor cursor = mAssignmentDataAdapter.getAssignmentsCursor();
+        String[] fromColumns = new String[]{CourseDataAdapter.KEY_NAME,
+                CourseDataAdapter.KEY_SCORE};
+        int[] toTextViews = new int[]{R.id.courseRowTitle, R.id.courseRowGrade};
+        mListView.setAdapter(mCursorAdapter);
+        registerForContextMenu(mListView);
+
+        mCursorAdapter = new SimpleCursorTreeAdapter(this.getActivity(), cursor,
                 R.layout.course_list_group,
                 R.layout.course_list_group,
                 new String[]{CategoryDataAdapter.KEY_NAME},
@@ -110,8 +109,7 @@ public class CourseFragment extends Fragment {
             AddAssignmentDialogFragment newDialog = new AddAssignmentDialogFragment();
             newDialog.show(getFragmentManager(), "dialogAss");
 
-        }
-        else if(id == R.id.add_category){
+        } else if (id == R.id.add_category) {
 //            DialogFragment dialog = AddCategoryDialogFragment.newInstatnce();
 //            dialog.show(getFragmentManager(), "addCategoryDialogFragment");
 //            FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -122,10 +120,10 @@ public class CourseFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public static void addCategory(Context context, String name, int weight){
+    public static void addCategory(Context context, String name, int weight) {
         listCategories.add(name);
         List<Assignment> newList = new ArrayList<Assignment>();
-        mapAssignments.put(name,newList);
+        mapAssignments.put(name, newList);
 //        mListView.setAdapter(new CourseAdapter(context, listCategories, mapAssignments));
     }
 
@@ -139,8 +137,7 @@ public class CourseFragment extends Fragment {
     /**
      * Read: Get a score for the data storage mechanism
      *
-     * @param id
-     *            Index of the score in the data storage mechanism
+     * @param id Index of the score in the data storage mechanism
      */
     private Category getCategory(long id) {
         // return mScores.get((int) id);
@@ -173,8 +170,7 @@ public class CourseFragment extends Fragment {
     /**
      * Delete: Remove a score from the data storage mechanism
      *
-     * @param id
-     *            Index of the score in the data storage mechanism
+     * @param id Index of the score in the data storage mechanism
      */
     private void removeCategory(long id) {
         // mScores.remove((int) id);
@@ -184,6 +180,7 @@ public class CourseFragment extends Fragment {
         Cursor cursor = mCategoryDataAdapter.getCategorysCursor();
         mCursorAdapter.changeCursor(cursor);
     }
+
     static void addAssignment(Assignment a) {
         mAssignmentDataAdapter.addAssignment(a);
         Cursor cursor = mAssignmentDataAdapter.getAssignmentsCursor();
@@ -193,8 +190,7 @@ public class CourseFragment extends Fragment {
     /**
      * Read: Get a score for the data storage mechanism
      *
-     * @param id
-     *            Index of the score in the data storage mechanism
+     * @param id Index of the score in the data storage mechanism
      */
     private Assignment getAssignemt(long id) {
         // return mScores.get((int) id);
@@ -227,8 +223,7 @@ public class CourseFragment extends Fragment {
     /**
      * Delete: Remove a score from the data storage mechanism
      *
-     * @param id
-     *            Index of the score in the data storage mechanism
+     * @param id Index of the score in the data storage mechanism
      */
     private void removeAssignment(long id) {
         mAssignmentDataAdapter.removeAssignment(id);

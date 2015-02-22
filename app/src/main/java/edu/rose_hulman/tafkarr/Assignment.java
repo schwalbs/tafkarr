@@ -9,7 +9,7 @@ public class Assignment {
     private long mId;
 
     public Assignment(String s, double i) {
-        mTitle = s ;
+        mTitle = s;
         mGrade = i;
     }
 

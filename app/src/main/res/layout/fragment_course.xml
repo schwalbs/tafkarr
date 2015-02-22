@@ -12,20 +12,11 @@
 
 
     <SearchView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/searchView"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true" />
+        android:queryHint="@string/query_hint"/>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Class Name"
-        android:id="@+id/textView"
-        android:layout_alignBottom="@+id/searchView"
-        android:layout_centerHorizontal="true" />
     </LinearLayout>
     <ExpandableListView
         android:layout_width="match_parent"

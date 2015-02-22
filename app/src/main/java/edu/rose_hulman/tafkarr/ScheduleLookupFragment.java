@@ -1,8 +1,5 @@
 package edu.rose_hulman.tafkarr;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
@@ -24,6 +21,9 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class ScheduleLookupFragment extends Fragment {
@@ -88,7 +88,7 @@ public class ScheduleLookupFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView textView, int id,
                                           KeyEvent keyEvent) {
-                if (id == R.id.searchIME || id == EditorInfo.IME_NULL){
+                if (id == R.id.searchIME || id == EditorInfo.IME_NULL) {
                     performSearch();
                     return true;
                 }

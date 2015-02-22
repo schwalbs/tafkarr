@@ -6,27 +6,23 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.SeekBar;
 
-public class AddClassDialogFragment extends DialogFragment {
-    public interface addClassDialogListener {
-        public void onClassConfirmClick(DialogFragment dialog, String className);
-        public void onClassDenyClick(DialogFragment dialog);
+public class AddCourseDialogFragment extends DialogFragment {
+    public interface AddCourseDialogListener {
+        public void onCourseConfirmClick(DialogFragment dialog, String className);
+
+        public void onCourseDenyClick(DialogFragment dialog);
     }
 
     // Use this instance of the interface to deliver action events
-    String mClassName;
-    String mClassTarget;
-    addClassDialogListener mListener;
-    String mTag;
+    private String mClassName;
+    private EditText mClassNameField;
+    private AddCourseDialogListener mListener;
 
-    public AddClassDialogFragment (){
+    public AddCourseDialogFragment() {
 
     }
 
@@ -36,7 +32,7 @@ public class AddClassDialogFragment extends DialogFragment {
         // Verify that the host activity implements the callback interface
         try {
             // Instantiate the NoticeDialogListener so we can send events to the host
-            mListener = (addClassDialogListener) activity;
+            mListener = (AddCourseDialogListener) activity;
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
             throw new ClassCastException(activity.toString()
@@ -51,25 +47,44 @@ public class AddClassDialogFragment extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View layoutView = inflater.inflate(R.layout.dialog_add_class, null);
         builder.setView(layoutView);
-        final EditText mClassNameField = (EditText) layoutView.findViewById(R.id.class_name);
-//        final EditText mClassTargetField = (EditText) layoutView.findViewById(R.id.class_target);
+        mClassNameField = (EditText) layoutView.findViewById(R.id.class_name);
 
-        builder.setTitle("Add a Class");
+        builder.setTitle(getActivity().getString(R.string.add_class));
         builder
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // Send the positive button event back to the host activity
-                        mClassName = mClassNameField.getText().toString();
-//                        mClassTarget = mClassTargetField.getText().toString();
-                        mListener.onClassConfirmClick(AddClassDialogFragment.this, mClassName);
+                        //do nothing so it can be overriden later
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Send the negative button event back to the host activity
-                        mListener.onClassDenyClick(AddClassDialogFragment.this);
+                        mListener.onCourseDenyClick(AddCourseDialogFragment.this);
                     }
                 });
         return builder.create();
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        AlertDialog dialog = (AlertDialog) getDialog();
+        if (dialog != null) {
+            //override positive button so it won't automatically close
+            dialog.getButton(Dialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Send the positive button event back to the host activity
+                    mClassName = mClassNameField.getText().toString().trim();
+                    if (mClassName.isEmpty()) {
+                        mClassNameField.setError(getActivity().getString(R.string.required));
+                    } else {
+                        mListener.onCourseConfirmClick(AddCourseDialogFragment.this, mClassName);
+                        dismiss();
+                    }
+                }
+            });
+        }
     }
 }

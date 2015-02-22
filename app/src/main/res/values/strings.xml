@@ -11,7 +11,6 @@
     <string name="title_section3">Section 3</string>
     <string name="title_activity_edit_course">EditCourseActivity</string>
     <string name="search">Search</string>
-    <string name="query">Query</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="prompt_email">Email</string>
@@ -35,8 +34,20 @@
     <string name="ical_base">https://prodweb.rose-hulman.edu/regweb/calendar/%1$s.ics</string>
     <string name="sync">Sync term with Google Calendar</string>
     <string name="pick_account">You must select an account.</string>
+    <string name="multi_select_delete_title">Select items to delete</string>
+    <string name="multi_select_sub_title">You selected %1$d</string>
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="required">Required</string>
+    <string name="add_class">Add a Class</string>
+    <string name="add_category_title">Add a grade category</string>
+    <string name="add_assignment_dialog_title">Add an assignment</string>
+    <string name="class_title">Class Title</string>
+    <string name="category_name">Category Name</string>
+    <string name="assignment_name">Assignment Name</string>
+    <string name="grade">Grade</string>
+    <string name="courses_imported">%1$d courses imported</string>
+    <string name="query_hint">Search category or assignment</string>
 
 
 </resources>

@@ -5,13 +5,6 @@
 
     <item android:id="@+id/load_courses" android:title="@string/load_courses"
         android:orderInCategory="98" app:showAsAction="never" />
-    <item android:id="@+id/sync_calendar" android:title="@string/sync"
-        android:orderInCategory="99" app:showAsAction="never" />
     <item android:id="@+id/action_sign_out" android:title="@string/sign_out"
         android:orderInCategory="100" app:showAsAction="never" />
-    <item android:id="@+id/add_class"
-        android:title="Add class"
-        android:orderInCategory="1"
-        app:showAsAction="ifRoom|withText"/>
-
 </menu>

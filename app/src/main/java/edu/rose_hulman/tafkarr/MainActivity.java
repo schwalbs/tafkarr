@@ -1,31 +1,24 @@
 package edu.rose_hulman.tafkarr;
 
-import java.util.Locale;
-
-
-import android.accounts.AccountManager;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.os.Bundle;
-import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.support.v13.app.FragmentPagerAdapter;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.widget.Toast;
+import android.os.Bundle;
+import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 
-import com.google.android.gms.common.AccountPicker;
+import java.util.Locale;
 
 
-public class MainActivity extends Activity implements ActionBar.TabListener,AddClassDialogFragment.addClassDialogListener {
+public class MainActivity extends Activity implements ActionBar.TabListener, AddCourseDialogFragment.AddCourseDialogListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -40,11 +33,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener,AddC
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    ViewPager mViewPager;
-    private String mEmail;
+    private ViewPager mViewPager;
     private SharedPreferences mSharedPrefs;
-    private static final int REQUEST_CODE_PICK_ACCOUNT = 1;
-    private static final String SCOPE = "oauth2:https://www.googleapis.com/auth/calendar";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,50 +106,18 @@ public class MainActivity extends Activity implements ActionBar.TabListener,AddC
             this.startActivity(i);
             finish();
             return true;
-        } else if (id == R.id.sync_calendar) {
-            //pickUserAccount();
-            new GetTermCalenderDataTask(this, Util.getCurrentTerm(), null).execute();
-        } else if (id == R.id.load_courses){
+        } else if (id == R.id.load_courses) {
             String username = mSharedPrefs.getString(getString(R.string.prefs_key_username_shared), "");
             String authorization = mSharedPrefs.getString(getString(R.string.prefs_key_auth_shared), "");
-            new LoadCurrentTermCoursesTask(this, username, authorization, null).execute();
-        }
-        if (id == R.id.add_class){
-            AddClassDialogFragment newDialog = new AddClassDialogFragment();
-            newDialog.show(getFragmentManager(), "dialog");
+
+
+            View[] viewsToHide = new View[]{};
+            new LoadCurrentTermCoursesTask(this, username, authorization).execute();
         }
 
         return super.onOptionsItemSelected(item);
     }
-    private void pickUserAccount() {
-        String[] accountTypes = new String[]{"com.google"};
-        Intent intent = AccountPicker.newChooseAccountIntent(null, null,
-                accountTypes, false, null, null, null, null);
-        startActivityForResult(intent, REQUEST_CODE_PICK_ACCOUNT);
-    }
-    private void getUsername() {
-        if (mEmail == null) {
-            pickUserAccount();
-        } else {
-             new GetUsernameTask(this, mEmail, SCOPE).execute();
-        }
-    }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE_PICK_ACCOUNT) {
-            // Receiving a result from the AccountPicker
-            if (resultCode == RESULT_OK) {
-                mEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-                // With the account name acquired, go get the auth token
-                getUsername();
-            } else if (resultCode == RESULT_CANCELED) {
-                // The account picker dialog closed without selecting an account.
-                // Notify users that they must pick an account to proceed.
-                Toast.makeText(this, R.string.pick_account, Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
 
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
@@ -177,14 +135,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener,AddC
     }
 
     @Override
-    public void onClassConfirmClick(DialogFragment dialog, String className) {
+    public void onCourseConfirmClick(DialogFragment dialog, String courseName) {
         Course newCourse = new Course();
-        newCourse.setTitle(className);
-        CourseListFragment.addClass(newCourse);
+        newCourse.setTitle(courseName);
+        CourseListFragment.addCourse(newCourse);
     }
 
     @Override
-    public void onClassDenyClick(DialogFragment dialog) {
+    public void onCourseDenyClick(DialogFragment dialog) {
 
     }
 
@@ -208,7 +166,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener,AddC
                 case 1:
                     return new ScheduleLookupFragment();
                 default:
-                    return PlaceholderFragment.newInstance(position + 1);
+                    return null;
             }
         }
 
@@ -230,36 +188,5 @@ public class MainActivity extends Activity implements ActionBar.TabListener,AddC
         }
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_course_tab, container, false);
-            return rootView;
-        }
-    }
 }

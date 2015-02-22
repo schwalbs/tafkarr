@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 public class CategoryDataAdapter {
     // Becomes the filename of the database
@@ -27,6 +26,7 @@ public class CategoryDataAdapter {
 
     private static String DROP_STATEMENT = "DROP TABLE IF EXISTS " + TABLE_NAME;
     private static String CREATE_STATEMENT;
+
     static {
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE " + TABLE_NAME + " (");
@@ -75,13 +75,13 @@ public class CategoryDataAdapter {
     }
 
     public Cursor getCategorysCursor() {
-        String[] projection = new String[] { KEY_ID, KEY_NAME, KEY_WEIGHT, KEY_CLASS};
+        String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_WEIGHT, KEY_CLASS};
         return mDatabase.query(TABLE_NAME, projection, null, null, null, null,
                 KEY_WEIGHT + " DESC");
     }
 
     public Category getCategory(long id) {
-        String[] projection = new String[] { KEY_ID, KEY_NAME, KEY_WEIGHT,KEY_CLASS };
+        String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_WEIGHT, KEY_CLASS};
         String selection = KEY_ID + " = " + id;
         boolean distinctRows = true;
         Cursor c = mDatabase.query(distinctRows, TABLE_NAME, projection,
@@ -93,7 +93,7 @@ public class CategoryDataAdapter {
     }
 
     private Category getCategoryFromCursor(Cursor c) {
-        Category category = new Category(c.getString(c.getColumnIndexOrThrow(KEY_NAME)),c.getDouble(c.getColumnIndexOrThrow(KEY_WEIGHT)),c.getLong(c.getColumnIndexOrThrow(KEY_CLASS)) );
+        Category category = new Category(c.getString(c.getColumnIndexOrThrow(KEY_NAME)), c.getDouble(c.getColumnIndexOrThrow(KEY_WEIGHT)), c.getLong(c.getColumnIndexOrThrow(KEY_CLASS)));
         category.setId(c.getInt(c.getColumnIndexOrThrow(KEY_ID)));
         return category;
     }

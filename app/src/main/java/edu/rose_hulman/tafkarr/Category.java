@@ -10,14 +10,16 @@ public class Category {
     private long mClassId;
 
     public Category(String s, double d, long l) {
-        mTitle = s ;
+        mTitle = s;
         mClassId = l;
         mWeight = d;
     }
-    public double getWeight(){
+
+    public double getWeight() {
         return mWeight;
     }
-    public void setWeight(double newWeight){
+
+    public void setWeight(double newWeight) {
         this.mWeight = newWeight;
     }
 
@@ -28,6 +30,7 @@ public class Category {
     public void setClassId(long mClassId) {
         this.mClassId = mClassId;
     }
+
     public long getId() {
         return mId;
     }

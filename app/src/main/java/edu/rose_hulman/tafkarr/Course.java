@@ -3,8 +3,6 @@ package edu.rose_hulman.tafkarr;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.ArrayList;
-
 /**
  * Created by andrewca on 1/17/2015.
  */

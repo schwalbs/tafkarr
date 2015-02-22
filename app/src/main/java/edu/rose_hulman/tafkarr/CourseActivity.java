@@ -2,16 +2,10 @@ package edu.rose_hulman.tafkarr;
 
 import android.app.Activity;
 import android.app.DialogFragment;
-import android.app.LoaderManager;
-import android.content.Loader;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 
-import static android.app.PendingIntent.getActivity;
+public class CourseActivity extends Activity implements AddCategoryDialogFragment.AddCategoryDialogListener, AddAssignmentDialogFragment.AddAssignmentDialogListener {
 
-
-public class CourseActivity extends Activity implements AddCategoryDialogFragment.addCategoryDialogListener,AddAssignmentDialogFragment.addAssignmentDialogListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +21,7 @@ public class CourseActivity extends Activity implements AddCategoryDialogFragmen
 
     @Override
     public void onDialogConfirmClick(DialogFragment dialog, String categoryName, double categoryWeight) {
-        Category newCategory = new Category(categoryName,categoryWeight, getIntent().getLongExtra(CourseListFragment.courseId, -1));
+        Category newCategory = new Category(categoryName, categoryWeight, getIntent().getLongExtra(CourseListFragment.courseId, -1));
         CourseFragment.addCategory(newCategory);
     }
 

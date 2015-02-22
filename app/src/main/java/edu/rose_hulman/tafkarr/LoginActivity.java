@@ -1,12 +1,5 @@
 package edu.rose_hulman.tafkarr;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -26,6 +19,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 /**
  * A login screen that offers login via username/password.
@@ -177,6 +177,12 @@ public class LoginActivity extends Activity {
         }
     }
 
+    private void goToMainActivity() {
+        Intent i = new Intent(LoginActivity.this, MainActivity.class);
+        LoginActivity.this.startActivity(i);
+        finish();
+    }
+
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
@@ -244,11 +250,5 @@ public class LoginActivity extends Activity {
             mAuthTask = null;
             showProgress(false);
         }
-    }
-
-    private void goToMainActivity() {
-        Intent i = new Intent(LoginActivity.this, MainActivity.class);
-        LoginActivity.this.startActivity(i);
-        finish();
     }
 }

@@ -33,7 +33,7 @@ public class CourseCategory {
         this.mWeight = mWeight;
     }
 
-    public double getCategoryGrade(){
+    public double getCategoryGrade() {
         return 0.0;
     }
 
