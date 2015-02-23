@@ -4,7 +4,6 @@ import android.app.Fragment;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 import android.widget.SimpleCursorTreeAdapter;
+import android.widget.TextView;
+
 
 public class CourseFragment extends Fragment {
     public static ExpandableListView mListView;
@@ -45,18 +46,20 @@ public class CourseFragment extends Fragment {
         setHasOptionsMenu(true);
         courseId = getActivity().getIntent().getLongExtra(CourseListFragment.courseId, -1);
         mCourseName = getActivity().getIntent().getStringExtra(CourseListFragment.courseName);
+        getActivity().setTitle(mCourseName);
         mAssignmentDataAdapter = new AssignmentDataAdapter(this.getActivity());
         mAssignmentDataAdapter.open();
         mCategoryDataAdapter = new CategoryDataAdapter(this.getActivity());
         mCategoryDataAdapter.open();
+
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_course, container, false);
-        mListView = (ExpandableListView) rootView.findViewById(R.id.expandableListView);
 
+        mListView = (ExpandableListView) rootView.findViewById(R.id.expandableListView);
         Cursor categoryCursor = mCategoryDataAdapter.getCategoriesCursor(this.courseId);
         mListView.setAdapter(mCursorAdapter);
         registerForContextMenu(mListView);
@@ -75,31 +78,53 @@ public class CourseFragment extends Fragment {
                 return mAssignmentDataAdapter.getAssignmentsCursor(groupCursor.getString(groupCursor.getColumnIndexOrThrow(CategoryDataAdapter.KEY_NAME)));
             }
 
-//            @Override
-//            public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-//                convertView.setOnLongClickListener(new View.OnLongClickListener() {
-//                    @Override
-//                    public boolean onLongClick(View v) {
-//                        Cursor newCurse = (Cursor) v.get
-////                                getItemAtPosition(childPosition+1);
-//                        AddAssignmentDialogFragment newDialog = AddAssignmentDialogFragment.newInstance(newCurse.getString(newCurse.getColumnIndexOrThrow(AssignmentDataAdapter.KEY_NAME)),newCurse.getDouble(newCurse.getColumnIndexOrThrow(AssignmentDataAdapter.KEY_SCORE)), newCurse.getLong(newCurse.getColumnIndexOrThrow(AssignmentDataAdapter.KEY_ID)));
-//                        newDialog.show(getFragmentManager(), "dialogAss");
-//                        return true;
-//                    }
-//                });
-//                return super.getGroupView(groupPosition, isExpanded, convertView, parent);
-//            }
-        };
-        mListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
-            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                Cursor newCurse = (Cursor) mListView.getItemAtPosition(childPosition+1);
-                AddAssignmentDialogFragment newDialog = AddAssignmentDialogFragment.newInstance(newCurse.getString(newCurse.getColumnIndexOrThrow(AssignmentDataAdapter.KEY_NAME)),newCurse.getDouble(newCurse.getColumnIndexOrThrow(AssignmentDataAdapter.KEY_SCORE)), newCurse.getLong(newCurse.getColumnIndexOrThrow(AssignmentDataAdapter.KEY_ID)));
-                newDialog.show(getFragmentManager(), "dialogAss");
-                return true;
+            public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+                View groupView = super.getGroupView(groupPosition, isExpanded, convertView, parent);
+
+                Cursor groupCursor = getGroup(groupPosition);
+                Category cat = mCategoryDataAdapter.getCategory(groupCursor.getLong(groupCursor.getColumnIndexOrThrow(CategoryDataAdapter.KEY_ID)));
+                double average = mAssignmentDataAdapter.getCategoryAverage(cat.getTitle());
+
+                String averageS = getActivity().getString(R.string.double_format, average);
+                ((TextView) groupView.findViewById(R.id.group_value)).setText(averageS);
+
+                return groupView;
+            }
+
+        };
+        mListView.setOnChildClickListener(
+                new ExpandableListView.OnChildClickListener() {
+                    @Override
+                    public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
+                                                int childPosition, long id) {
+                        Cursor newCurse = (Cursor) mListView.getItemAtPosition(childPosition + 1);
+                        AddAssignmentDialogFragment newDialog = AddAssignmentDialogFragment.newInstance(newCurse.getString(newCurse.getColumnIndexOrThrow(AssignmentDataAdapter.KEY_NAME)), newCurse.getDouble(newCurse.getColumnIndexOrThrow(AssignmentDataAdapter.KEY_SCORE)), newCurse.getLong(newCurse.getColumnIndexOrThrow(AssignmentDataAdapter.KEY_ID)));
+                        newDialog.show(getFragmentManager(), "dialogAss");
+                        return true;
+                    }
+                }
+        );
+
+        mListView.setAdapter(mCursorAdapter);
+        mListView.setChildDivider(getResources().getDrawable(R.color.transparent));
+        mListView.setDivider(getResources().getDrawable(R.color.transparent));
+
+
+        rootView.findViewById(R.id.add_assignment_fab).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AddAssignmentDialogFragment newDialog = new AddAssignmentDialogFragment();
+                newDialog.show(getFragmentManager(), "dialog");
             }
         });
-        mListView.setAdapter(mCursorAdapter);
+        rootView.findViewById(R.id.add_category_fab).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AddCategoryDialogFragment newDialog = new AddCategoryDialogFragment();
+                newDialog.show(getFragmentManager(), "dialog");
+            }
+        });
 
         return rootView;
     }
@@ -114,15 +139,8 @@ public class CourseFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.add_assignment) {
-            AddAssignmentDialogFragment newDialog = new AddAssignmentDialogFragment();
-            newDialog.show(getFragmentManager(), "dialogAss");
-            return true;
-        } else if (id == R.id.add_category) {
-            AddCategoryDialogFragment newDialog = new AddCategoryDialogFragment();
-            newDialog.show(getFragmentManager(), "dialog");
-            return true;
-        } else if (id == android.R.id.home) {
+
+        if (id == android.R.id.home) {
             NavUtils.navigateUpFromSameTask(getActivity());
             return true;
         }
@@ -144,7 +162,7 @@ public class CourseFragment extends Fragment {
         return mAssignmentDataAdapter.getAssignment(id);
     }
 
-    public static void editAssignment(Assignment a, int catPos){
+    public static void editAssignment(Assignment a, int catPos) {
         mAssignmentDataAdapter.updateAssignment(a);
         Cursor cursor = mAssignmentDataAdapter.getAssignmentsCursor(a.getCatId());
         mCursorAdapter.setChildrenCursor(catPos, cursor);
@@ -155,7 +173,4 @@ public class CourseFragment extends Fragment {
         Cursor cursor = mAssignmentDataAdapter.getAssignmentsCursor();
         mCursorAdapter.changeCursor(cursor);
     }
-
-
 }
-

@@ -1,16 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/multi_select_selector"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:paddingLeft="48dp"
+    android:paddingRight="@dimen/activity_horizontal_margin">
+
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:id="@+id/assignment_title"
-        android:layout_weight="0.9"/>
+        android:layout_gravity="center_vertical"
+        android:layout_weight="0.5"
+        android:textSize="16sp" />
+
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.1"
-        android:id="@+id/grade_value"/>
+        android:layout_weight="0.5"
+        android:textSize="16sp"
+        android:id="@+id/grade_value"
+        android:layout_gravity="center_vertical|right"
+        android:gravity="right" />
 
 </LinearLayout>

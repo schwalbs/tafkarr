@@ -55,10 +55,9 @@ public class LoadCurrentTermCoursesTask extends
             Toast.makeText(mContext, mContext.getString(R.string.error_loading_courses), Toast.LENGTH_SHORT).show();
         } else {
             int numAdded = CourseListFragment.addCoursesCheckUniqueName(result);
-            mProgress.dismiss();
             Toast.makeText(mContext, mContext.getString(R.string.courses_imported, numAdded), Toast.LENGTH_SHORT).show();
         }
-
+        mProgress.dismiss();
     }
 
     private ArrayList<Course> parseResponse(Document doc) {

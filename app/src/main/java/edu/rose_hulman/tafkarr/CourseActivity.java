@@ -11,7 +11,9 @@ public class CourseActivity extends Activity implements AddCategoryDialogFragmen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getActionBar() != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         if (savedInstanceState == null) {
 
             getFragmentManager().beginTransaction()

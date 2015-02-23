@@ -6,14 +6,14 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteCursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-
-import com.melnykov.fab.FloatingActionButton;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -28,12 +28,16 @@ public class CourseListFragment extends Fragment {
     private static CourseDataAdapter mCourseDataAdapter;
     private static SimpleCursorAdapter mCursorAdapter;
 
-
-    public CourseListFragment() {
+    public SimpleCursorAdapter getCursorAdapter(){
+        return mCursorAdapter;
     }
 
-    public static SimpleCursorAdapter getCursorAdapter() {
-        return mCursorAdapter;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mCourseDataAdapter = new CourseDataAdapter(this.getActivity());
+        mCourseDataAdapter.open();
     }
 
     private static void updateCursor() {
@@ -88,13 +92,6 @@ public class CourseListFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mCourseDataAdapter = new CourseDataAdapter(this.getActivity());
-        mCourseDataAdapter.open();
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_course_tab, container, false);
 
@@ -103,13 +100,45 @@ public class CourseListFragment extends Fragment {
                 CourseDataAdapter.KEY_SCORE};
         int[] toTextViews = new int[]{R.id.courseRowTitle, R.id.courseRowGrade};
         mCursorAdapter = new SimpleCursorAdapter(this.getActivity(),
-                R.layout.course_row, cursor, fromColumns, toTextViews, 0);
+                R.layout.course_row, cursor, fromColumns, toTextViews, 0) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View rowView = super.getView(position, convertView, parent);
+
+                Cursor cursor = (Cursor) getItem(position);
+                Course course = mCourseDataAdapter.getCourse(cursor.getLong(cursor.getColumnIndexOrThrow(CourseDataAdapter.KEY_ID)));
+                CategoryDataAdapter cda = new CategoryDataAdapter(getActivity());
+                cda.open();
+                Cursor categoriesCursor = cda.getCategoriesCursor(course.getId());
+
+                AssignmentDataAdapter ada = new AssignmentDataAdapter(getActivity());
+                ada.open();
+
+
+                double total = 0;
+                categoriesCursor.moveToFirst();
+                for (int i = 0; i < categoriesCursor.getCount(); i++) {
+                    double weight = categoriesCursor.getDouble(categoriesCursor.getColumnIndexOrThrow(CategoryDataAdapter.KEY_WEIGHT)) / 100;
+                    String catName = categoriesCursor.getString(categoriesCursor.getColumnIndexOrThrow(CategoryDataAdapter.KEY_NAME));
+                    double avg = ada.getCategoryAverage(catName);
+                    total += (avg * weight);
+                    categoriesCursor.moveToNext();
+                }
+
+                String totalS = getActivity().getString(R.string.double_format, total);
+                ((TextView) rowView.findViewById(R.id.courseRowGrade)).setText(totalS);
+                ada.close();
+                cda.close();
+                return rowView;
+            }
+        };
+
 
         mListView = (ListView) rootView.findViewById(R.id.course_list);
         mListView.setAdapter(mCursorAdapter);
         registerForContextMenu(mListView);
         mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-        mListView.setMultiChoiceModeListener(new CourseMultiChoiceModeListener(getActivity(), this));
+        mListView.setMultiChoiceModeListener(new CourseMultiSelectListener(getActivity(), this));
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -120,13 +149,12 @@ public class CourseListFragment extends Fragment {
                 startActivityForResult(i, position);
             }
         });
-        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.add_course_fab);
-        fab.attachToListView(mListView);
-        fab.setOnClickListener(new View.OnClickListener() {
+
+        rootView.findViewById(R.id.add_course_fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AddCourseDialogFragment newDialog = new AddCourseDialogFragment();
-                newDialog.show(getFragmentManager(), "dialog");
+                newDialog.show(getFragmentManager(), "");
             }
         });
         return rootView;

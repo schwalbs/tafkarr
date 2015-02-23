@@ -18,6 +18,7 @@ public class CategoryDataAdapter {
     private static String DROP_STATEMENT = "DROP TABLE IF EXISTS " + TABLE_NAME;
     private static final int DATABASE_VERSION = 4;
     private static String CREATE_STATEMENT;
+
     static {
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE " + TABLE_NAME + " (");
@@ -28,6 +29,7 @@ public class CategoryDataAdapter {
         sb.append(")");
         CREATE_STATEMENT = sb.toString();
     }
+
     private SQLiteOpenHelper mOpenHelper;
     private SQLiteDatabase mDatabase;
 

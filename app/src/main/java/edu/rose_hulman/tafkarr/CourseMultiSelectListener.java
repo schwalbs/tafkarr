@@ -10,14 +10,11 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-/**
- * Created by gartzkds on 2/21/2015.
- */
-public class CourseMultiChoiceModeListener extends BaseMultiChoiceModeListener {
+public class CourseMultiSelectListener extends BaseMultiSelectListener {
 
     private CourseListFragment mClFrag;
 
-    public CourseMultiChoiceModeListener(Context context, CourseListFragment clFrag) {
+    public CourseMultiSelectListener(Context context, CourseListFragment clFrag) {
         super(context);
         mClFrag = clFrag;
     }

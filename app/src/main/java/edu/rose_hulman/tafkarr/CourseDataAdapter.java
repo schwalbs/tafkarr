@@ -76,6 +76,7 @@ public class CourseDataAdapter {
                 KEY_SCORE + " DESC");
     }
 
+
     public boolean existsCourseWithName(String courseName) {
         String[] projection = new String[]{KEY_NAME};
         String selection = KEY_NAME + "='" + courseName + "'";

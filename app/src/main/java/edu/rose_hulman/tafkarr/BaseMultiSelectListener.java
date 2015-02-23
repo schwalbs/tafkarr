@@ -12,13 +12,13 @@ import java.util.ArrayList;
 /**
  * Created by gartzkds on 2/21/2015.
  */
-public abstract class BaseMultiChoiceModeListener implements AbsListView.MultiChoiceModeListener {
+public abstract class BaseMultiSelectListener implements AbsListView.MultiChoiceModeListener {
 
     protected Context mContext;
     protected ArrayList<Integer> mSelectedRows;
 
 
-    public BaseMultiChoiceModeListener(Context context) {
+    public BaseMultiSelectListener(Context context) {
         mContext = context;
         mSelectedRows = new ArrayList<>();
     }

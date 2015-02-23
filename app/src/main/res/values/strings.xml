@@ -11,7 +11,7 @@
     <string name="verification_error">Unable to verify credentials</string>
     <string name="shared_prefs_file">edu.rosehulman.tafkarr</string>
     <string name="schedule_lookup_field_required">Full or partial username required</string>
-    <string name="add_categories">Add category</string>
+    <string name="add_category">Add category</string>
     <string name="add_assignment">Add assignment</string>
     <string name="required_field">This field is required.</string>
     <string name="courses">Courses</string>
@@ -35,6 +35,8 @@
     <string name="log_error">ERROR</string>
     <string name="request_authorization">Authorization</string>
     <string name="error_loading_courses">Errors while fetching schedule</string>
+    <string name="grade_evaluation">Grade Evaluation</string>
+    <string name="double_format">%1$.2f</string>
 
 
 </resources>

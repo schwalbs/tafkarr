@@ -19,6 +19,7 @@ public class AddAssignmentDialogFragment extends DialogFragment {
     private static final String KEY_ASS_NAME = "name key";
     private static final String KEY_ASS_GRADE = "grade key";
     private static final String KEY_ASS_ID = "ID key";
+
     // Use this instance of the interface to deliver action events
     private AddAssignmentDialogListener mListener;
     private String mAssignmentName;
@@ -61,11 +62,11 @@ public class AddAssignmentDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Build the dialog and set up the button click handlers
         Bundle bundle = getArguments();
-        if(bundle!=null) {
+        if (bundle != null) {
             mAssignmentName = bundle.getString(KEY_ASS_NAME);
             mGrade = bundle.getDouble(KEY_ASS_GRADE) + "";
             mID = bundle.getLong(KEY_ASS_ID);
-        }else{
+        } else {
             mID = -1;
         }
         String category = "";
@@ -122,7 +123,7 @@ public class AddAssignmentDialogFragment extends DialogFragment {
                         Cursor curse = (Cursor) mCatSpin.getSelectedItem();
                         String categoryName = curse.getString(curse.getColumnIndexOrThrow(CategoryDataAdapter.KEY_NAME));
                         Log.d("HHH", categoryName);
-                        mListener.onDialogPositiveClick(AddAssignmentDialogFragment.this, mAssignmentName, categoryName, grade, mCatSpin.getSelectedItemPosition(), getArguments()!=null,mID );
+                        mListener.onDialogPositiveClick(AddAssignmentDialogFragment.this, mAssignmentName, categoryName, grade, mCatSpin.getSelectedItemPosition(), getArguments() != null, mID);
                         dismiss();
                     }
                 }

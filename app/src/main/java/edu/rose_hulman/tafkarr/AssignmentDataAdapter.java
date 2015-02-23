@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class AssignmentDataAdapter {
     public static final String TABLE_NAME = "assignments";
@@ -54,6 +55,8 @@ public class AssignmentDataAdapter {
         return row;
     }
 
+
+
     /**
      * Add score to the table.
      *
@@ -65,6 +68,13 @@ public class AssignmentDataAdapter {
         long rowId = mDatabase.insert(TABLE_NAME, null, row);
         assignment.setId(rowId);
         return rowId;
+    }
+
+    public double getCategoryAverage(String mCatName){
+        String query = String.format("SELECT AVG(%s) FROM %s WHERE %s='%s'", KEY_SCORE, TABLE_NAME, KEY_CAT, mCatName);
+        Cursor cursor =  mDatabase.rawQuery(query, new String[]{});
+        cursor.moveToFirst();
+        return cursor.getDouble(0);
     }
 
     public Cursor getAssignmentsCursor() {
