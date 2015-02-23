@@ -7,20 +7,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class ClassDataAdapter {
-    // Becomes the filename of the database
-    private static final String DATABASE_NAME = "courses.db";
-    private static final String TABLE_NAME = "courses";
-    private static final int DATABASE_VERSION = 4;
-
-    private SQLiteOpenHelper mOpenHelper;
-    private SQLiteDatabase mDatabase;
     public static final String KEY_ID = "_id";
     public static final String KEY_NAME = "name";
     public static final String KEY_SCORE = "score";
-
+    // Becomes the filename of the database
+    private static final String DATABASE_NAME = "courses.db";
+    private static final String TABLE_NAME = "courses";
     private static String DROP_STATEMENT = "DROP TABLE IF EXISTS " + TABLE_NAME;
+    private static final int DATABASE_VERSION = 4;
     private static String CREATE_STATEMENT;
-
     static {
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE " + TABLE_NAME + " (");
@@ -30,6 +25,8 @@ public class ClassDataAdapter {
         sb.append(")");
         CREATE_STATEMENT = sb.toString();
     }
+    private SQLiteOpenHelper mOpenHelper;
+    private SQLiteDatabase mDatabase;
 
     public ClassDataAdapter(Context context) {
         // Create a SQLiteOpenHelper

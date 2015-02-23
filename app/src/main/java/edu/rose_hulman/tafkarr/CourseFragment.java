@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,13 +16,27 @@ import android.widget.SimpleCursorTreeAdapter;
 
 public class CourseFragment extends Fragment {
     public static ExpandableListView mListView;
-    private static AssignmentDataAdapter mAssignmentDataAdapter;
     public static CategoryDataAdapter mCategoryDataAdapter;
+    private static AssignmentDataAdapter mAssignmentDataAdapter;
     private static SimpleCursorTreeAdapter mCursorAdapter;
     private static long courseId;
     private static String mCourseName;
 
     public CourseFragment() {
+    }
+
+    static void addCategory(Category c) {
+        mCategoryDataAdapter.addCategory(c);
+        Cursor cursor = mCategoryDataAdapter.getCategoriesCursor(courseId);
+        mCursorAdapter.setGroupCursor(cursor);
+        mCategoryDataAdapter.logAll();
+    }
+
+    static void addAssignment(Assignment a, int catPos) {
+        mAssignmentDataAdapter.addAssignment(a);
+        Cursor cursor = mAssignmentDataAdapter.getAssignmentsCursor(a.getCatId());
+        mCursorAdapter.setChildrenCursor(catPos, cursor);
+        mAssignmentDataAdapter.logAll();
     }
 
     @Override
@@ -59,8 +74,31 @@ public class CourseFragment extends Fragment {
             protected Cursor getChildrenCursor(Cursor groupCursor) {
                 return mAssignmentDataAdapter.getAssignmentsCursor(groupCursor.getString(groupCursor.getColumnIndexOrThrow(CategoryDataAdapter.KEY_NAME)));
             }
-        };
 
+//            @Override
+//            public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+//                convertView.setOnLongClickListener(new View.OnLongClickListener() {
+//                    @Override
+//                    public boolean onLongClick(View v) {
+//                        Cursor newCurse = (Cursor) v.get
+////                                getItemAtPosition(childPosition+1);
+//                        AddAssignmentDialogFragment newDialog = AddAssignmentDialogFragment.newInstance(newCurse.getString(newCurse.getColumnIndexOrThrow(AssignmentDataAdapter.KEY_NAME)),newCurse.getDouble(newCurse.getColumnIndexOrThrow(AssignmentDataAdapter.KEY_SCORE)), newCurse.getLong(newCurse.getColumnIndexOrThrow(AssignmentDataAdapter.KEY_ID)));
+//                        newDialog.show(getFragmentManager(), "dialogAss");
+//                        return true;
+//                    }
+//                });
+//                return super.getGroupView(groupPosition, isExpanded, convertView, parent);
+//            }
+        };
+        mListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                Cursor newCurse = (Cursor) mListView.getItemAtPosition(childPosition+1);
+                AddAssignmentDialogFragment newDialog = AddAssignmentDialogFragment.newInstance(newCurse.getString(newCurse.getColumnIndexOrThrow(AssignmentDataAdapter.KEY_NAME)),newCurse.getDouble(newCurse.getColumnIndexOrThrow(AssignmentDataAdapter.KEY_SCORE)), newCurse.getLong(newCurse.getColumnIndexOrThrow(AssignmentDataAdapter.KEY_ID)));
+                newDialog.show(getFragmentManager(), "dialogAss");
+                return true;
+            }
+        });
         mListView.setAdapter(mCursorAdapter);
 
         return rootView;
@@ -92,14 +130,6 @@ public class CourseFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    static void addCategory(Category c) {
-        mCategoryDataAdapter.addCategory(c);
-        Cursor cursor = mCategoryDataAdapter.getCategoriesCursor(courseId);
-        mCursorAdapter.setGroupCursor(cursor);
-        mCategoryDataAdapter.logAll();
-    }
-
-
     private Category getCategory(long id) {
         return mCategoryDataAdapter.getCategory(id);
     }
@@ -110,15 +140,14 @@ public class CourseFragment extends Fragment {
         mCursorAdapter.changeCursor(cursor);
     }
 
-    static void addAssignment(Assignment a, int catPos) {
-        mAssignmentDataAdapter.addAssignment(a);
-        Cursor cursor = mAssignmentDataAdapter.getAssignmentsCursor(a.getCatId());
-        mCursorAdapter.setChildrenCursor(catPos, cursor);
-        mAssignmentDataAdapter.logAll();
-    }
-
     private Assignment getAssignemt(long id) {
         return mAssignmentDataAdapter.getAssignment(id);
+    }
+
+    public static void editAssignment(Assignment a, int catPos){
+        mAssignmentDataAdapter.updateAssignment(a);
+        Cursor cursor = mAssignmentDataAdapter.getAssignmentsCursor(a.getCatId());
+        mCursorAdapter.setChildrenCursor(catPos, cursor);
     }
 
     private void removeAssignment(long id) {

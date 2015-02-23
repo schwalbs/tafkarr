@@ -7,22 +7,17 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class CategoryDataAdapter {
-    private static final String DATABASE_NAME = "categorys.db";
-    private static final String TABLE_NAME = "categorys";
-    private static final int DATABASE_VERSION = 4;
-
-    private SQLiteOpenHelper mOpenHelper;
-    private SQLiteDatabase mDatabase;
     // Android naming convention for IDs
     public static final String KEY_ID = "_id";
     public static final String KEY_NAME = "name";
     public static final String KEY_CLASS = "class";
     public static final String KEY_WEIGHT = "weight";
     public static final String KEY_AVG = "average";
-
+    private static final String DATABASE_NAME = "categorys.db";
+    private static final String TABLE_NAME = "categorys";
     private static String DROP_STATEMENT = "DROP TABLE IF EXISTS " + TABLE_NAME;
+    private static final int DATABASE_VERSION = 4;
     private static String CREATE_STATEMENT;
-
     static {
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE " + TABLE_NAME + " (");
@@ -33,6 +28,8 @@ public class CategoryDataAdapter {
         sb.append(")");
         CREATE_STATEMENT = sb.toString();
     }
+    private SQLiteOpenHelper mOpenHelper;
+    private SQLiteDatabase mDatabase;
 
     public CategoryDataAdapter(Context context) {
         // Create a SQLiteOpenHelper
@@ -70,11 +67,13 @@ public class CategoryDataAdapter {
         return mDatabase.query(TABLE_NAME, projection, KEY_CLASS + " = " + id, null, null, null,
                 KEY_WEIGHT + " DESC");
     }
+
     public Cursor getCategoriesCursor(String id) {
         String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_WEIGHT, KEY_CLASS};
         return mDatabase.query(TABLE_NAME, projection, KEY_NAME + " = " + "'" + id + "'", null, null, null,
                 KEY_WEIGHT + " DESC");
     }
+
     public Cursor getCategoriesCursor() {
         String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_WEIGHT, KEY_CLASS};
         return mDatabase.query(TABLE_NAME, projection, null, null, null, null,
@@ -92,6 +91,7 @@ public class CategoryDataAdapter {
         }
         return null;
     }
+
     public Category getCategory(String catName) {
         String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_WEIGHT, KEY_CLASS};
         String selection = KEY_NAME + " = " + "'" + catName + "'";

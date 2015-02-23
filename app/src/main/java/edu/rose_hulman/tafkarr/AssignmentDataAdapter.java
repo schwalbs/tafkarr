@@ -7,22 +7,17 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class AssignmentDataAdapter {
-    // Becomes the filename of the database
-    private static final String DATABASE_NAME = "assignments.db";
     public static final String TABLE_NAME = "assignments";
-    private static final int DATABASE_VERSION = 4;
-
-    private SQLiteOpenHelper mOpenHelper;
-    private SQLiteDatabase mDatabase;
+    private static String DROP_STATEMENT = "DROP TABLE IF EXISTS " + TABLE_NAME;
     // Android naming convention for IDs
     public static final String KEY_ID = "_id";
     public static final String KEY_NAME = "name";
     public static final String KEY_SCORE = "score";
     public static final String KEY_CAT = "category";
-
-    private static String DROP_STATEMENT = "DROP TABLE IF EXISTS " + TABLE_NAME;
+    // Becomes the filename of the database
+    private static final String DATABASE_NAME = "assignments.db";
+    private static final int DATABASE_VERSION = 4;
     private static String CREATE_STATEMENT;
-
     static {
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE " + TABLE_NAME + " (");
@@ -33,6 +28,8 @@ public class AssignmentDataAdapter {
         sb.append(")");
         CREATE_STATEMENT = sb.toString();
     }
+    private SQLiteOpenHelper mOpenHelper;
+    private SQLiteDatabase mDatabase;
 
     public AssignmentDataAdapter(Context context) {
         // Create a SQLiteOpenHelper
@@ -76,6 +73,7 @@ public class AssignmentDataAdapter {
                 KEY_SCORE + " DESC");
 
     }
+
     public Cursor getAssignmentsCursor(String mCatId) {
         String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_SCORE, KEY_CAT};
 
@@ -85,7 +83,7 @@ public class AssignmentDataAdapter {
     }
 
     public Assignment getAssignment(long id) {
-        String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_SCORE,KEY_CAT};
+        String[] projection = new String[]{KEY_ID, KEY_NAME, KEY_SCORE, KEY_CAT};
         String selection = KEY_ID + " = " + id;
         boolean distinctRows = true;
         Cursor c = mDatabase.query(distinctRows, TABLE_NAME, projection,

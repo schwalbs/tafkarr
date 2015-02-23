@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class CourseCategory {
     private String mTitle;
     private double mWeight;
+    private ArrayList<Assignment> mAssignments;
 
     public ArrayList<Assignment> getmAssignments() {
         return mAssignments;
@@ -36,8 +37,5 @@ public class CourseCategory {
     public double getCategoryGrade() {
         return 0.0;
     }
-
-
-    private ArrayList<Assignment> mAssignments;
 
 }

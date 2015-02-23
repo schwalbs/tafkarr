@@ -28,12 +28,60 @@ public class CourseListFragment extends Fragment {
     private static SimpleCursorAdapter mCursorAdapter;
 
 
+    public CourseListFragment() {
+    }
+
     public static SimpleCursorAdapter getCursorAdapter() {
         return mCursorAdapter;
     }
 
+    private static void updateCursor() {
+        Cursor cursor = mCourseDataAdapter.getCoursesCursor();
+        mCursorAdapter.changeCursor(cursor);
+        mCourseDataAdapter.logAll();
+    }
 
-    public CourseListFragment() {
+    static void addCourse(Course c) {
+        mCourseDataAdapter.addCourse(c);
+        updateCursor();
+    }
+
+    static int addCoursesCheckUniqueName(ArrayList<Course> courses) {
+        int added = 0;
+        for (Course c : courses) {
+            if (!mCourseDataAdapter.existsCourseWithName(c.getTitle())) {
+                mCourseDataAdapter.addCourse(c);
+                added++;
+            }
+        }
+        updateCursor();
+        return added;
+    }
+    static void launchEditCourse(long id){
+
+    }
+    static void addCourses(ArrayList<Course> courses) {
+        for (Course c : courses) {
+            mCourseDataAdapter.addCourse(c);
+        }
+        updateCursor();
+    }
+
+    static void removeCourse(Course c) {
+        mCourseDataAdapter.removeCourse(c);
+        updateCursor();
+    }
+
+    static void removeCourses(ArrayList<Course> courses) {
+        for (Course c : courses) {
+            mCourseDataAdapter.removeCourse(c);
+        }
+        updateCursor();
+    }
+
+    static void removeCoursesByIds(ArrayList<Long> courseIds) {
+        mCourseDataAdapter.removeCourses(courseIds);
+        updateCursor();
     }
 
     @Override
@@ -69,7 +117,6 @@ public class CourseListFragment extends Fragment {
                 startActivityForResult(i, position);
             }
         });
-
         FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.add_course_fab);
         fab.attachToListView(mListView);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -80,54 +127,6 @@ public class CourseListFragment extends Fragment {
             }
         });
         return rootView;
-    }
-
-
-    private static void updateCursor() {
-        Cursor cursor = mCourseDataAdapter.getCoursesCursor();
-        mCursorAdapter.changeCursor(cursor);
-        mCourseDataAdapter.logAll();
-    }
-
-    static void addCourse(Course c) {
-        mCourseDataAdapter.addCourse(c);
-        updateCursor();
-    }
-
-    static int addCoursesCheckUniqueName(ArrayList<Course> courses) {
-        int added = 0;
-        for (Course c : courses) {
-            if (!mCourseDataAdapter.existsCourseWithName(c.getTitle())) {
-                mCourseDataAdapter.addCourse(c);
-                added++;
-            }
-        }
-        updateCursor();
-        return added;
-    }
-
-    static void addCourses(ArrayList<Course> courses) {
-        for (Course c : courses) {
-            mCourseDataAdapter.addCourse(c);
-        }
-        updateCursor();
-    }
-
-    static void removeCourse(Course c) {
-        mCourseDataAdapter.removeCourse(c);
-        updateCursor();
-    }
-
-    static void removeCourses(ArrayList<Course> courses) {
-        for (Course c : courses) {
-            mCourseDataAdapter.removeCourse(c);
-        }
-        updateCursor();
-    }
-
-    static void removeCoursesByIds(ArrayList<Long> courseIds) {
-        mCourseDataAdapter.removeCourses(courseIds);
-        updateCursor();
     }
 
 }

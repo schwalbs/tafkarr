@@ -149,12 +149,12 @@ public class LoginActivity extends Activity {
             if (success) {
                 // save password if remember me is checked and continue to main activity
                 SharedPreferences.Editor editor = mSharedPrefs.edit();
-                editor.putString(getString(R.string.prefs_key_auth_shared),  new String(Base64.encodeBase64((mUsername + ":" + mPassword).getBytes())));
+                editor.putString(getString(R.string.prefs_key_auth_shared), new String(Base64.encodeBase64((mUsername + ":" + mPassword).getBytes())));
                 editor.putString(getString(R.string.prefs_key_username_shared), mUsername);
                 editor.apply();
                 goToMainActivity();
             } else {
-                Toast.makeText(LoginActivity.this,getString(R.string.verification_error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginActivity.this, getString(R.string.verification_error), Toast.LENGTH_SHORT).show();
                 mUsernameView.requestFocus();
             }
         }

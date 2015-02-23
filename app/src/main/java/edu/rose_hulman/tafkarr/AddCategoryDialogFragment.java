@@ -14,18 +14,11 @@ import android.widget.TextView;
 
 public class AddCategoryDialogFragment extends DialogFragment {
 
-    public interface AddCategoryDialogListener {
-        public void onDialogConfirmClick(DialogFragment dialog, String categoryName, double categoryWeight);
-
-        public void onDialogDenyClick(DialogFragment dialog);
-    }
-
     // Use this instance of the interface to deliver action events
     private int mCategoryWeight;
     private String mCategoryName;
     private EditText mCategoryNameField;
     private AddCategoryDialogListener mListener;
-
     public AddCategoryDialogFragment() {
 
     }
@@ -113,6 +106,12 @@ public class AddCategoryDialogFragment extends DialogFragment {
                 }
             });
         }
+    }
+
+    public interface AddCategoryDialogListener {
+        public void onDialogConfirmClick(DialogFragment dialog, String categoryName, double categoryWeight);
+
+        public void onDialogDenyClick(DialogFragment dialog);
     }
 
 }

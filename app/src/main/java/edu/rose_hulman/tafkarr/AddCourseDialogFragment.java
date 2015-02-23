@@ -11,17 +11,22 @@ import android.view.View;
 import android.widget.EditText;
 
 public class AddCourseDialogFragment extends DialogFragment {
-    public interface AddCourseDialogListener {
-        public void onCourseConfirmClick(DialogFragment dialog, String className);
-    }
-
+    private static final String KEY_COURSE_NAME = "key course";
+    private static final String KEY_COURSE_ID = "key iden";
     // Use this instance of the interface to deliver action events
     private String mClassName;
     private EditText mClassNameField;
     private AddCourseDialogListener mListener;
-
     public AddCourseDialogFragment() {
 
+    }
+    public static AddCourseDialogFragment newInstance(String name, long iD) {
+        Bundle args = new Bundle();
+        args.putString(KEY_COURSE_NAME, name);
+        args.putLong(KEY_COURSE_ID, iD);
+        AddCourseDialogFragment dF = new AddCourseDialogFragment();
+        dF.setArguments(args);
+        return (dF);
     }
 
     @Override
@@ -46,7 +51,9 @@ public class AddCourseDialogFragment extends DialogFragment {
         View layoutView = inflater.inflate(R.layout.dialog_add_class, null);
         builder.setView(layoutView);
         mClassNameField = (EditText) layoutView.findViewById(R.id.class_name);
-
+        if(getArguments()!=null) {
+            mClassNameField.setText(getArguments().getString(KEY_COURSE_NAME));
+        }
         builder.setTitle(getActivity().getString(R.string.add_class));
         builder
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -58,7 +65,6 @@ public class AddCourseDialogFragment extends DialogFragment {
         return builder.create();
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
@@ -69,6 +75,7 @@ public class AddCourseDialogFragment extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     // Send the positive button event back to the host activity
+
                     mClassName = mClassNameField.getText().toString().trim();
                     if (mClassName.isEmpty()) {
                         mClassNameField.setError(getActivity().getString(R.string.required));
@@ -79,5 +86,10 @@ public class AddCourseDialogFragment extends DialogFragment {
                 }
             });
         }
+    }
+
+
+    public interface AddCourseDialogListener {
+        public void onCourseConfirmClick(DialogFragment dialog, String className);
     }
 }

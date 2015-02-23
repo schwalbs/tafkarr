@@ -12,20 +12,6 @@ public class ScheduleLookupResultsListAdapter extends
         RecyclerView.Adapter<ScheduleLookupResultsListAdapter.ViewHolder> {
     private ArrayList<String> mDataset;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
-        private View mView;
-
-        public ViewHolder(View v) {
-            super(v);
-            mView = v;
-        }
-
-        public void setData(String data) {
-            ((TextView) mView.findViewById(R.id.resultData)).setText(data);
-        }
-    }
-
     // Provide a suitable constructor (depends on the kind of dataset)
     public ScheduleLookupResultsListAdapter(ArrayList<String> dataset) {
         mDataset = dataset;
@@ -56,12 +42,26 @@ public class ScheduleLookupResultsListAdapter extends
         return mDataset.size();
     }
 
+    public ArrayList<String> getDataset() {
+        return mDataset;
+    }
+
     public void setDataset(ArrayList<String> newDataset) {
         mDataset = newDataset;
         this.notifyDataSetChanged();
     }
 
-    public ArrayList<String> getDataset() {
-        return mDataset;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        // each data item is just a string in this case
+        private View mView;
+
+        public ViewHolder(View v) {
+            super(v);
+            mView = v;
+        }
+
+        public void setData(String data) {
+            ((TextView) mView.findViewById(R.id.resultData)).setText(data);
+        }
     }
 }

@@ -21,6 +21,7 @@ public class Assignment {
     public void setCatId(String mCatId) {
         this.mCatName = mCatId;
     }
+
     public long getId() {
         return mId;
     }

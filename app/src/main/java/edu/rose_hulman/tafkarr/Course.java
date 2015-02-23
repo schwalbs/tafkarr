@@ -7,6 +7,18 @@ import android.os.Parcelable;
  * Created by andrewca on 1/17/2015.
  */
 public class Course implements Parcelable {
+    public static final Parcelable.Creator<Course> CREATOR = new Parcelable.Creator<Course>() {
+
+        @Override
+        public Course createFromParcel(Parcel source) {
+            return new Course(source);
+        }
+
+        @Override
+        public Course[] newArray(int size) {
+            return new Course[size];
+        }
+    };
     private String mTitle;
     private double mTargetGrade;
     private double mCourseGrade;
@@ -70,17 +82,4 @@ public class Course implements Parcelable {
         dest.writeDouble(mTargetGrade);
         dest.writeDouble(mCourseGrade);
     }
-
-    public static final Parcelable.Creator<Course> CREATOR = new Parcelable.Creator<Course>() {
-
-        @Override
-        public Course createFromParcel(Parcel source) {
-            return new Course(source);
-        }
-
-        @Override
-        public Course[] newArray(int size) {
-            return new Course[size];
-        }
-    };
 }
