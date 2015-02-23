@@ -135,7 +135,7 @@ public class CourseListFragment extends Fragment {
 
 
         mListView = (ListView) rootView.findViewById(R.id.course_list);
-        mListView.setAdapter(mCursorAdapter);
+        mListView.setAdapter(mCursorAdapter);        mCursorAdapter.s
         registerForContextMenu(mListView);
         mListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         mListView.setMultiChoiceModeListener(new CourseMultiSelectListener(getActivity(), this));
@@ -149,6 +149,9 @@ public class CourseListFragment extends Fragment {
                 startActivityForResult(i, position);
             }
         });
+
+        mListView.setDivider(getResources().getDrawable(getResources().getColor(R.color.transparent)));
+        mListView.setDividerHeight(0);
 
         rootView.findViewById(R.id.add_course_fab).setOnClickListener(new View.OnClickListener() {
             @Override
