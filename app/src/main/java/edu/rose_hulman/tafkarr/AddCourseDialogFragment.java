@@ -17,6 +17,8 @@ public class AddCourseDialogFragment extends DialogFragment {
     private String mClassName;
     private EditText mClassNameField;
     private AddCourseDialogListener mListener;
+    private boolean isEdited;
+    private long mID;
     public AddCourseDialogFragment() {
 
     }
@@ -53,6 +55,10 @@ public class AddCourseDialogFragment extends DialogFragment {
         mClassNameField = (EditText) layoutView.findViewById(R.id.class_name);
         if(getArguments()!=null) {
             mClassNameField.setText(getArguments().getString(KEY_COURSE_NAME));
+            mID = getArguments().getLong(KEY_COURSE_ID);
+            isEdited = true;
+        }else{
+            isEdited = false;
         }
         builder.setTitle(getActivity().getString(R.string.add_class));
         builder
@@ -80,7 +86,7 @@ public class AddCourseDialogFragment extends DialogFragment {
                     if (mClassName.isEmpty()) {
                         mClassNameField.setError(getActivity().getString(R.string.required));
                     } else {
-                        mListener.onCourseConfirmClick(AddCourseDialogFragment.this, mClassName);
+                        mListener.onCourseConfirmClick(AddCourseDialogFragment.this, mClassName, isEdited, mID);
                         dismiss();
                     }
                 }
@@ -90,6 +96,6 @@ public class AddCourseDialogFragment extends DialogFragment {
 
 
     public interface AddCourseDialogListener {
-        public void onCourseConfirmClick(DialogFragment dialog, String className);
+        public void onCourseConfirmClick(DialogFragment dialog, String className, boolean isEdited, long id);
     }
 }

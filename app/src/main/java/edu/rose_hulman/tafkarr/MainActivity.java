@@ -88,10 +88,17 @@ public class MainActivity extends Activity implements ActionBar.TabListener, Add
     }
 
     @Override
-    public void onCourseConfirmClick(DialogFragment dialog, String courseName) {
+    public void onCourseConfirmClick(DialogFragment dialog, String courseName, boolean isEdited, long id) {
+
         Course newCourse = new Course();
         newCourse.setTitle(courseName);
-        CourseListFragment.addCourse(newCourse);
+        if(isEdited){
+            newCourse.setId(id);
+            CourseListFragment.editCourse(newCourse);
+        }else {
+            CourseListFragment.addCourse(newCourse);
+        }
+
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {

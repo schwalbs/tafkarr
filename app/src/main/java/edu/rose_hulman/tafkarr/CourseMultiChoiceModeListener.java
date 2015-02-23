@@ -1,5 +1,6 @@
 package edu.rose_hulman.tafkarr;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.sqlite.SQLiteCursor;
 import android.view.ActionMode;
@@ -45,7 +46,7 @@ public class CourseMultiChoiceModeListener extends BaseMultiChoiceModeListener {
             if(idsToEdit.size()>1){
                 Toast.makeText(mClFrag.getActivity(), "Cannot edit more than one Course", Toast.LENGTH_SHORT).show();
             }else {
-                mClFrag.editCourse(idsToEdit.get(0));
+                mClFrag.launchEditCourse((Activity) mContext, idsToEdit.get(0));
             }
         }
 

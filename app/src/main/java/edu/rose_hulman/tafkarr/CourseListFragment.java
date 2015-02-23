@@ -1,5 +1,6 @@
 package edu.rose_hulman.tafkarr;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.database.Cursor;
@@ -57,8 +58,10 @@ public class CourseListFragment extends Fragment {
         updateCursor();
         return added;
     }
-    static void launchEditCourse(long id){
-
+    static void launchEditCourse(Activity activity,long id){
+        Course newCourse = mCourseDataAdapter.getCourse(id);
+        AddCourseDialogFragment newDialog = AddCourseDialogFragment.newInstance(newCourse.getTitle(), newCourse.getId());
+        newDialog.show(activity.getFragmentManager(), "dialogAss");
     }
     static void addCourses(ArrayList<Course> courses) {
         for (Course c : courses) {
@@ -129,4 +132,8 @@ public class CourseListFragment extends Fragment {
         return rootView;
     }
 
+    public static void editCourse(Course newCourse) {
+        mCourseDataAdapter.updateCourse(newCourse);
+        updateCursor();
+    }
 }
